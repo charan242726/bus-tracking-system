@@ -3,6 +3,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/database');
 
 // Import routes
@@ -29,6 +30,14 @@ connectDB();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
+
+// Serve React build (main interface)
+app.use(express.static('react-frontend/build'));
+
+// Serve legacy frontend (fallback)
+app.use('/legacy', express.static('frontend'));
+app.use('/passenger', express.static('frontend'));
 
 // Routes
 app.use('/api', busRoutes);
@@ -174,11 +183,13 @@ io.on('connection', (socket) => {
 // Make io available to our routes
 app.set('io', io);
 
-// Root endpoint
-app.get('/', (req, res) => {
+// API health check endpoint
+app.get('/api/health', (req, res) => {
   res.json({ 
     message: 'Bus Tracking API Server',
     version: '1.0.0',
+    status: 'running',
+    timestamp: new Date().toISOString(),
     endpoints: [
       'POST /api/driver/location - Update bus location',
       'GET /api/bus/:id/location - Get bus location',
@@ -192,6 +203,21 @@ app.get('/', (req, res) => {
       'POST /api/directions/recommendations - Get smart journey recommendations'
     ]
   });
+});
+
+// Root route serves the React app
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'react-frontend', 'build', 'index.html'));
+});
+
+// Handle React routing (catch-all handler for non-API routes)
+app.use((req, res, next) => {
+  // Skip API routes
+  if (req.path.startsWith('/api') || req.path.startsWith('/legacy') || req.path.startsWith('/passenger')) {
+    return next();
+  }
+  // For all other routes, serve the React app
+  res.sendFile(path.join(__dirname, 'react-frontend', 'build', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;

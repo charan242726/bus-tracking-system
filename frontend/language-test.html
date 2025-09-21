@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Switching Test | Transit Track System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #4f46e5;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .language-selector label {
+            font-weight: 600;
+            color: #4f46e5;
+            font-size: 1.1rem;
+        }
+
+        .language-selector select {
+            padding: 12px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .language-selector select:hover {
+            border-color: #4f46e5;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .test-section {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .test-section h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .test-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #4f46e5;
+        }
+
+        .test-card h3 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .test-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-1px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-indicator.active {
+            background: #10b981;
+        }
+
+        .status-indicator.delayed {
+            background: #f59e0b;
+        }
+
+        .status-indicator.stopped {
+            background: #ef4444;
+        }
+
+        .current-language {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(79, 70, 229, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        .current-language strong {
+            color: #4f46e5;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #4338ca;
+            transform: translateX(-3px);
+        }
+
+        /* RTL Support */
+        [dir="rtl"] .test-container {
+            direction: rtl;
+        }
+
+        [dir="rtl"] .language-selector {
+            direction: ltr;
+        }
+
+        [dir="rtl"] .test-card {
+            border-left: none;
+            border-right: 4px solid #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1><i class="fas fa-language"></i> Language Switching Test</h1>
+            <p>Test the internationalization (i18n) system by switching between different languages.</p>
+            
+            <div class="language-selector">
+                <label for="languageSelect"><i class="fas fa-globe"></i> Select Language:</label>
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="zh">中文</option>
+                    <option value="ar">العربية</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 data-i18n="features.title">System Features</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3 data-i18n="features.gps.title">GPS Tracking</h3>
+                    <p data-i18n="features.gps.desc">Real-time GPS monitoring of all buses with accurate location updates every 30 seconds for precise tracking.</p>
+                    <div class="test-buttons">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-satellite"></i>
+                            <span data-i18n="hero.trackBus">Track Bus Now</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <h3 data-i18n="features.schedule.title">Schedule Management</h3>
+                    <p data-i18n="features.schedule.desc">Automated schedule tracking with real-time updates on delays, early arrivals, and route modifications.</p>
+                    <div class="test-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-clock"></i>
+                            <span data-i18n="quickAccess.schedule.title">Schedule Lookup</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="test-card">
+                    <h3 data-i18n="features.mobile.title">Mobile Access</h3>
+                    <p data-i18n="features.mobile.desc">Responsive web design accessible on all devices, ensuring citizens can access transit information anywhere.</p>
+                    <div class="test-buttons">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span data-i18n="nav.services">Services</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2 data-i18n="tracking.title">Bus Tracking Control</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3 data-i18n="tracking.busInfo">Bus Information</h3>
+                    <p><strong data-i18n="tracking.busNumber">Bus Number:</strong> BUS001</p>
+                    <p><strong data-i18n="tracking.route">Route:</strong> Downtown Express</p>
+                    <p><strong data-i18n="tracking.driver">Driver:</strong> John Smith</p>
+                    <p>
+                        <span class="status-indicator active"></span>
+                        <span data-i18n="status.active">Active</span>
+                    </p>
+                </div>
+
+                <div class="test-card">
+                    <h3 data-i18n="tracking.nextStops">Next Stops</h3>
+                    <p>Central Station - 5 <span data-i18n="time.minutes">minutes</span></p>
+                    <p>City Center - 12 <span data-i18n="time.minutes">minutes</span></p>
+                    <p>Airport - 25 <span data-i18n="time.minutes">minutes</span></p>
+                </div>
+
+                <div class="test-card">
+                    <h3 data-i18n="quickAccess.support.title">Support Center</h3>
+                    <p data-i18n="quickAccess.support.desc">Contact our 24/7 support team for assistance and inquiries.</p>
+                    <div class="test-buttons">
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-phone"></i>
+                            <span data-i18n="nav.contact">Contact</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="current-language">
+            <p><strong>Current Language:</strong> <span id="currentLangDisplay">English</span></p>
+            <p><small>Page direction and text content should change when you select a different language.</small></p>
+        </div>
+
+        <div class="back-link">
+            <a href="index.html">
+                <i class="fas fa-arrow-left"></i>
+                <span data-i18n="nav.home">Back to Home</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/api-integration.js"></script>
+    <script src="js/i18n.js"></script>
+
+    <script>
+        // Update current language display
+        function updateCurrentLanguageDisplay() {
+            const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
+            const languageNames = {
+                'en': 'English',
+                'es': 'Español',
+                'fr': 'Français', 
+                'zh': '中文',
+                'ar': 'العربية',
+                'hi': 'हिन्दी'
+            };
+            
+            const display = document.getElementById('currentLangDisplay');
+            if (display) {
+                display.textContent = languageNames[currentLang] || currentLang;
+            }
+        }
+
+        // Listen for language changes
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                updateCurrentLanguageDisplay();
+                
+                // Update display when language changes
+                const languageSelect = document.getElementById('languageSelect');
+                if (languageSelect) {
+                    languageSelect.addEventListener('change', () => {
+                        setTimeout(updateCurrentLanguageDisplay, 100);
+                    });
+                }
+            }, 1500);
+        });
+
+        // Log when scripts load for debugging
+        console.log('Language test page loaded');
+        console.log('Available scripts:', {
+            i18n: typeof window.i18n,
+            busTrackingAPI: typeof window.busTrackingAPI,
+            io: typeof io
+        });
+    </script>
+</body>
+</html>

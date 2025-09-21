@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityLink Transit - Real-Time Bus Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide-react@0.292.0/dist/lucide-react.js"></script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
+        .hero-bg {
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3)), url('https://placehold.co/1200x600/a0aec0/ffffff?text=City+Bus');
+            background-size: cover;
+            background-position: center;
+        }
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            background-color: #e2e8f0; /* Tailwind slate-200 */
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://placehold.co/1000x450/e2e8f0/cbd5e1?text=City+Map+View');
+            background-size: cover;
+            background-position: center;
+        }
+        .bus-icon {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 2s linear, box-shadow 0.3s ease;
+            z-index: 10;
+        }
+        .bus-icon.selected {
+            box-shadow: 0 0 15px 5px #f59e0b; /* Amber-500 glow */
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 20;
+        }
+        .bus-stop {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .bus-stop .tooltip {
+            visibility: hidden;
+            width: 120px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .bus-stop:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .live-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+        .route-path {
+            position: absolute;
+            height: 4px;
+            background: #94a3b8;
+        }
+        .route-1 { width: 80%; top: 40%; left: 10%; }
+        .route-2 { width: 70%; top: 60%; left: 15%; }
+        .route-card.highlight {
+            border-color: #f59e0b; /* amber-500 */
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+            transform: scale(1.02);
+        }
+        .route-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 lg:px-8 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-blue-600">
+                CityLink <span class="text-amber-500">Transit</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#map-section" class="text-gray-600 hover:text-blue-600 transition-colors">Live Map</a>
+                <a href="#routes" class="text-gray-600 hover:text-blue-600 transition-colors">Routes</a>
+                <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+            </div>
+            <button class="md:hidden text-gray-600" id="menu-button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </nav>
+         <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden px-4 pb-4">
+            <a href="#map-section" class="block py-2 text-gray-600 hover:text-blue-600">Live Map</a>
+            <a href="#routes" class="block py-2 text-gray-600 hover:text-blue-600">Routes</a>
+            <a href="#features" class="block py-2 text-gray-600 hover:text-blue-600">Features</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-bg text-white">
+            <div class="container mx-auto px-4 lg:px-8 py-20 md:py-32 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-4">Never Miss Your Bus Again</h1>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-200">Real-time bus tracking for your city. Know exactly when your bus will arrive.</p>
+                <div class="max-w-xl mx-auto">
+                    <div class="flex items-center bg-white rounded-full shadow-lg p-2">
+                        <input type="text" id="route-search-input" placeholder="Enter your route or destination..." class="w-full bg-transparent px-4 py-2 text-gray-700 focus:outline-none">
+                        <button id="route-search-btn" class="bg-amber-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-amber-600 transition-transform transform hover:scale-105">Find Bus</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content: Map and Routes -->
+        <section id="map-section" class="py-16 md:py-24">
+            <div class="container mx-auto px-4 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Real-Time Transit Map</h2>
+                    <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Watch buses move in real-time and plan your travel accordingly.</p>
+                </div>
+
+                <div class="lg:grid lg:grid-cols-3 lg:gap-8">
+                    <!-- Map View -->
+                    <div class="lg:col-span-2 mb-8 lg:mb-0">
+                        <div class="map-container shadow-xl">
+                            <div class="map-placeholder"></div>
+                            <!-- Simulated Route Paths -->
+                            <div class="route-path route-1"></div>
+                            <div class="route-path route-2"></div>
+                            
+                            <!-- Bus Stops for Route 1 -->
+                            <div class="bus-stop" style="top: 40%; left: 10%;"><span class="tooltip">City Market</span></div>
+                            <div class="bus-stop" style="top: 40%; left: 30%;"><span class="tooltip">Main Street</span></div>
+                            <div class="bus-stop" style="top: 40%; left: 50%;"><span class="tooltip">Park Avenue</span></div>
+                            <div class="bus-stop" style="top: 40%; left: 70%;"><span class="tooltip">Library Crossing</span></div>
+                            <div class="bus-stop" style="top: 40%; left: 90%;"><span class="tooltip">Central Station</span></div>
+
+                            <!-- Bus Stops for Route 2 -->
+                            <div class="bus-stop" style="top: 60%; left: 15%;"><span class="tooltip">West Gate</span></div>
+                            <div class="bus-stop" style="top: 60%; left: 40%;"><span class="tooltip">Old Bridge</span></div>
+                            <div class="bus-stop" style="top: 60%; left: 65%;"><span class="tooltip">River Side</span></div>
+                            <div class="bus-stop" style="top: 60%; left: 85%;"><span class="tooltip">Tech Park</span></div>
+
+                            <!-- Simulated Bus Icons -->
+                            <div id="bus-101" class="bus-icon bg-amber-500" style="top: 40%; left: 10%; transform: translate(-50%, -50%);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v5c0 .6.4 1 1 1h2"/><path d="M19 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M5 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M5 11V6c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v5"/><path d="M15 9H9"/></svg>
+                            </div>
+                            <div id="bus-204B" class="bus-icon bg-indigo-500" style="top: 60%; left: 15%; transform: translate(-50%, -50%);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-1.1-.9-2-2-2H7c-1.1 0-2 .9-2 2v5c0 .6.4 1 1 1h2"/><path d="M19 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M5 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M5 11V6c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2v5"/><path d="M15 9H9"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Route Info -->
+                    <div id="routes">
+                        <div class="bg-white p-6 rounded-lg shadow-xl h-full">
+                            <h3 class="font-bold text-xl mb-4 flex items-center">
+                                <span class="w-3 h-3 bg-red-500 rounded-full mr-2 live-dot"></span>
+                                Live Status
+                            </h3>
+                            <div class="space-y-4">
+                                <!-- Route 1 -->
+                                <div id="card-101" data-bus-id="bus-101" class="route-card p-4 border rounded-lg hover:bg-gray-50">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-lg text-blue-600">Bus 101</span>
+                                        <span class="text-sm font-medium text-gray-500">to Central Station</span>
+                                    </div>
+                                    <div class="mt-2 text-sm text-gray-700">
+                                        Next Stop: <span class="font-semibold" id="next-stop-101">City Market</span>
+                                    </div>
+                                    <div class="mt-1 text-amber-600 font-bold">
+                                        Arriving in: <span id="eta-101">5 min</span>
+                                    </div>
+                                </div>
+                                <!-- Route 2 -->
+                                <div id="card-204B" data-bus-id="bus-204B" class="route-card p-4 border rounded-lg hover:bg-gray-50">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-lg text-blue-600">Bus 204B</span>
+                                        <span class="text-sm font-medium text-gray-500">to University Campus</span>
+                                    </div>
+                                    <div class="mt-2 text-sm text-gray-700">
+                                        Next Stop: <span class="font-semibold" id="next-stop-204B">West Gate</span>
+                                    </div>
+                                    <div class="mt-1 text-amber-600 font-bold">
+                                        Arriving in: <span id="eta-204B">8 min</span>
+                                    </div>
+                                </div>
+                                <!-- Route 3 -->
+                                <div id="card-42" data-bus-id="bus-42" class="route-card p-4 border rounded-lg hover:bg-gray-50">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-bold text-lg text-blue-600">Bus 42</span>
+                                        <span class="text-sm font-medium text-gray-500">to Tech Park</span>
+                                    </div>
+                                    <div class="mt-2 text-sm text-gray-700">
+                                        Next Stop: <span class="font-semibold">Old Bridge</span>
+                                    </div>
+                                    <div class="mt-1 text-green-600 font-bold">
+                                        Arrived
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section id="features" class="bg-white py-16 md:py-24">
+            <!-- ... existing features section ... -->
+            <div class="container mx-auto px-4 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold">Travel Smarter</h2>
+                    <p class="text-gray-600 mt-2 max-w-2xl mx-auto">Our platform is built to make your daily commute easier and more predictable.</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <!-- Feature 1 -->
+                    <div class="p-6">
+                        <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Live GPS Tracking</h3>
+                        <p class="text-gray-600">See the exact location of your bus on the map, updated in real-time.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="p-6">
+                        <div class="bg-amber-100 text-amber-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Accurate ETAs</h3>
+                        <p class="text-gray-600">Get reliable estimated arrival times for your stop, so you can plan perfectly.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="p-6">
+                        <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14.5A2.5 2.5 0 0 1 16.5 17H3"/><path d="M7 14.5A2.5 2.5 0 0 0 4.5 17H3"/><path d="m11 5 3 3-3 3"/><path d="M14 8H3"/><path d="M21 17a2.5 2.5 0 0 0-2.5-2.5H19"/><path d="M17 17a2.5 2.5 0 0 1-2.5-2.5H17"/><path d="m13 19-3-3 3-3"/><path d="M10 16h11"/></svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Route Information</h3>
+                        <p class="text-gray-600">Access detailed route maps, bus stops, and schedules all in one place.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white">
+       <!-- ... existing footer ... -->
+        <div class="container mx-auto px-4 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold text-blue-400">CityLink <span class="text-amber-400">Transit</span></h3>
+                    <p class="text-gray-400 mt-2">Connecting communities, one bus at a time.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-3">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-3">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-lg mb-3">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 text-center text-gray-500 text-sm">
+                &copy; 2024 CityLink Transit. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu toggle
+            const menuButton = document.getElementById('menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // --- Bus Data and Simulation ---
+            const buses = {
+                'bus-101': {
+                    element: document.getElementById('bus-101'),
+                    etaEl: document.getElementById('eta-101'),
+                    nextStopEl: document.getElementById('next-stop-101'),
+                    stops: [
+                        { pos: 10, name: 'City Market', eta: 5 },
+                        { pos: 30, name: 'Main Street', eta: 4 },
+                        { pos: 50, name: 'Park Avenue', eta: 3 },
+                        { pos: 70, name: 'Library Crossing', eta: 2 },
+                        { pos: 90, name: 'Central Station', eta: 1 }
+                    ],
+                    currentStopIndex: 0,
+                    interval: 10000 // 10 seconds
+                },
+                'bus-204B': {
+                    element: document.getElementById('bus-204B'),
+                    etaEl: document.getElementById('eta-204B'),
+                    nextStopEl: document.getElementById('next-stop-204B'),
+                    stops: [
+                        { pos: 15, name: 'West Gate', eta: 8 },
+                        { pos: 40, name: 'Old Bridge', eta: 6 },
+                        { pos: 65, name: 'River Side', eta: 4 },
+                        { pos: 85, name: 'Tech Park', eta: 2 }
+                    ],
+                    currentStopIndex: 0,
+                    interval: 13000 // 13 seconds
+                }
+            };
+            
+            function moveBus(busId) {
+                const busData = buses[busId];
+                busData.currentStopIndex = (busData.currentStopIndex + 1) % busData.stops.length;
+                const nextStop = busData.stops[busData.currentStopIndex];
+
+                busData.element.style.left = `${nextStop.pos}%`;
+                busData.nextStopEl.textContent = nextStop.name;
+                
+                let currentEta = nextStop.eta;
+                busData.etaEl.textContent = `${currentEta} min`;
+                
+                // Clear any previous interval for this bus's ETA to prevent memory leaks
+                if (busData.etaInterval) clearInterval(busData.etaInterval);
+
+                busData.etaInterval = setInterval(() => {
+                    currentEta--;
+                    if (currentEta > 0) {
+                        busData.etaEl.textContent = `${currentEta} min`;
+                    } else {
+                        busData.etaEl.textContent = 'Arriving';
+                        clearInterval(busData.etaInterval);
+                    }
+                }, 60000); // This is still 1 minute for a realistic countdown
+            }
+
+            // Start simulation for all buses
+            for (const busId in buses) {
+                moveBus(busId); // Initial move
+                setInterval(() => moveBus(busId), buses[busId].interval);
+            }
+
+            // --- Interactivity ---
+            const routeCards = document.querySelectorAll('.route-card');
+            const busIcons = document.querySelectorAll('.bus-icon');
+
+            function selectBus(busId) {
+                // Remove selection from all elements
+                routeCards.forEach(card => card.classList.remove('highlight'));
+                busIcons.forEach(icon => icon.classList.remove('selected'));
+                
+                if (busId) {
+                    const cardId = `card-${busId.split('-')[1]}`;
+                    const card = document.getElementById(cardId);
+                    const icon = document.getElementById(busId);
+                    
+                    if (card) card.classList.add('highlight');
+                    if (icon) icon.classList.add('selected');
+                }
+            }
+
+            routeCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const busId = card.dataset.busId;
+                    selectBus(busId);
+                });
+            });
+            
+            // --- Search Functionality ---
+            const searchInput = document.getElementById('route-search-input');
+            const searchBtn = document.getElementById('route-search-btn');
+
+            searchBtn.addEventListener('click', () => {
+                const query = searchInput.value.trim().toUpperCase();
+                if (!query) return;
+
+                const targetCardId = `card-${query}`;
+                const targetCard = document.getElementById(targetCardId);
+
+                if (targetCard) {
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    selectBus(targetCard.dataset.busId);
+                } else {
+                    alert('Route not found. Please try "101" or "204B".');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+

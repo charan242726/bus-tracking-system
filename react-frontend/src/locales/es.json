@@ -1,0 +1,130 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "liveTracking": "Seguimiento en Vivo",
+    "routes": "Rutas",
+    "services": "Servicios",
+    "contact": "Contacto",
+    "fullscreen": "Pantalla Completa",
+    "language": "Idioma"
+  },
+  "hero": {
+    "title": "Seguimiento de Transporte Público en Tiempo Real",
+    "subtitle": "Monitoree ubicaciones de autobuses, horarios y rutas con nuestro sistema de seguimiento avanzado. Garantizando transporte público eficiente y confiable para todos los ciudadanos.",
+    "trackBus": "Rastrear Autobús Ahora",
+    "viewRoutes": "Ver Rutas"
+  },
+  "features": {
+    "title": "Características del Sistema",
+    "gps": {
+      "title": "Seguimiento GPS",
+      "desc": "Monitoreo GPS en tiempo real de todos los autobuses con actualizaciones de ubicación precisas cada 30 segundos."
+    },
+    "schedule": {
+      "title": "Gestión de Horarios",
+      "desc": "Seguimiento automatizado de horarios con actualizaciones en tiempo real sobre retrasos, llegadas tempranas y modificaciones de rutas."
+    },
+    "mobile": {
+      "title": "Acceso Móvil",
+      "desc": "Diseño web responsivo accesible en todos los dispositivos, asegurando que los ciudadanos puedan acceder a información de tránsito en cualquier lugar."
+    },
+    "analytics": {
+      "title": "Panel de Análisis",
+      "desc": "Informes integrales y análisis para optimización de rutas y monitoreo de rendimiento."
+    },
+    "alerts": {
+      "title": "Sistema de Alertas",
+      "desc": "Notificaciones automáticas para interrupciones del servicio, retrasos y anuncios importantes de tránsito."
+    },
+    "security": {
+      "title": "Plataforma Segura",
+      "desc": "Seguridad de grado gubernamental que garantiza la protección de datos y la confiabilidad del sistema para uso público."
+    }
+  },
+  "stats": {
+    "buses": "Autobuses Activos",
+    "routes": "Rutas Cubiertas",
+    "passengers": "Pasajeros Diarios",
+    "uptime": "Tiempo de Actividad del Sistema"
+  },
+  "quickAccess": {
+    "title": "Acceso Rápido",
+    "nearestStop": {
+      "title": "Encontrar Parada Más Cercana",
+      "desc": "Ubique la parada de autobús más cercana a su ubicación actual con direcciones para caminar."
+    },
+    "schedule": {
+      "title": "Consulta de Horarios",
+      "desc": "Consulte horarios de autobuses y planifique su viaje con horarios de llegada y salida."
+    },
+    "alerts": {
+      "title": "Alertas de Servicio",
+      "desc": "Manténgase informado sobre interrupciones del servicio, retrasos y cambios de ruta."
+    },
+    "support": {
+      "title": "Centro de Soporte",
+      "desc": "Contacte a nuestro equipo de soporte 24/7 para asistencia e consultas."
+    }
+  },
+  "tracking": {
+    "title": "Control de Seguimiento de Autobuses",
+    "mapView": "Vista de Mapa",
+    "listView": "Vista de Lista",
+    "searchPlaceholder": "Buscar por ruta, número de autobús o destino...",
+    "filterAll": "Todos",
+    "filterRoute": "Ruta",
+    "filterNearby": "Cercanos",
+    "filterExpress": "Expreso",
+    "filterLocal": "Local",
+    "filterDelayed": "Retrasados",
+    "autoRefresh": "Actualización Automática",
+    "refreshRate": "Frecuencia de Actualización",
+    "showTraffic": "Mostrar Tráfico",
+    "soundAlerts": "Alertas de Sonido",
+    "highContrast": "Alto Contraste",
+    "busInfo": "Información del Autobús",
+    "busNumber": "Número de Autobús",
+    "route": "Ruta",
+    "speed": "Velocidad y Dirección Actual",
+    "driver": "Conductor",
+    "capacity": "Capacidad de Pasajeros",
+    "nextStops": "Próximas Paradas",
+    "loading": "Cargando ubicaciones de autobuses..."
+  },
+  "status": {
+    "active": "Activo",
+    "delayed": "Retrasado",
+    "stopped": "Detenido",
+    "offline": "Fuera de línea"
+  },
+  "time": {
+    "seconds": "segundos",
+    "minute": "minuto",
+    "minutes": "minutos"
+  },
+  "notification": {
+    "languageChanged": "Idioma cambiado a",
+    "locationFound": "Se ha encontrado su ubicación",
+    "locationError": "No se puede obtener su ubicación. Por favor habilite los servicios de ubicación.",
+    "busSelected": "Autobús seleccionado",
+    "busUpdated": "Ubicaciones de autobuses actualizadas",
+    "offline": "Usando datos sin conexión"
+  },
+  "footer": {
+    "department": "Departamento de Transporte",
+    "description": "Comprometidos a brindar servicios de transporte público seguros, eficientes y confiables para todos los ciudadanos.",
+    "quickLinks": "Enlaces Rápidos",
+    "routeMaps": "Mapas de Rutas",
+    "schedules": "Horarios",
+    "serviceAlerts": "Alertas de Servicio",
+    "support": "Soporte",
+    "helpCenter": "Centro de Ayuda",
+    "contactUs": "Contáctanos",
+    "feedback": "Comentarios",
+    "accessibility": "Accesibilidad",
+    "contact": "Información de Contacto",
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Servicio"
+  }
+}

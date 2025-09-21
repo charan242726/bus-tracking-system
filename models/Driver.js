@@ -135,6 +135,12 @@ const driverSchema = new mongoose.Schema({
   isOnline: {
     type: Boolean,
     default: false
+  },
+  // Authentication
+  password: {
+    type: String,
+    required: true,
+    select: false // Don't include in queries by default
   }
 }, {
   timestamps: true

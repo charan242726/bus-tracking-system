@@ -2,72 +2,109 @@
 
 This file provides guidance to WARP (warp.dev) when working with code in this repository.
 
-## Enhanced Bus Tracking System
+## Transit Track - Full-Stack Bus Tracking System
 
-This system now supports comprehensive city-to-city bus tracking, real-time driver and user tracking, route optimization, and map visualization capabilities.
+A comprehensive real-time bus tracking application with both backend API and frontend interface. Supports city-to-city transportation, driver/user tracking, route optimization, live mapping, and public-facing web interface.
 
 ## Development Commands
 
-### Start/Run the Application
-- **Development mode (with auto-reload)**: `npm run dev`
-- **Production mode**: `npm start`
-- **Direct execution**: `node server.js`
-
-### Dependencies
-- **Install all dependencies**: `npm install`
-- **Install production dependencies only**: `npm install --production`
-
-### Testing
-- Currently no testing framework is configured (package.json shows placeholder test script)
-- To add testing, consider installing Jest or Mocha and updating the test script
-
-### API Testing
-Test the API endpoints using curl:
+### Backend Server
 ```bash
-# City-to-City Bus Search
-curl "http://localhost:3000/api/cities/search?query=Mumbai"
-curl "http://localhost:3000/api/tracking/buses/search?originCity=Mumbai&destinationCity=Pune&routeType=express"
+# Start development server with auto-reload (primary command)
+npm run dev
 
-# Real-time Bus Tracking
-curl "http://localhost:3000/api/tracking/buses/BUS_001/realtime"
-curl -X POST http://localhost:3000/api/tracking/buses/location -H "Content-Type: application/json" -d '{"busId": "BUS_001", "lat": 19.0760, "lng": 72.8777, "speed": 45}'
+# Production server
+npm start
 
-# Route Optimization
-curl -X POST http://localhost:3000/api/tracking/optimize-route -H "Content-Type: application/json" -d '{"userId": "USER_001", "destination": {"lat": 19.1136, "lng": 72.8697}}'
-
-# Legacy endpoints (still supported)
-curl -X POST http://localhost:3000/api/driver/location -H "Content-Type: application/json" -d '{"busId": "BUS_001", "lat": 37.7749, "lng": -122.4194}'
-curl http://localhost:3000/api/bus/BUS_001/location
-curl http://localhost:3000/api/routes
+# Direct execution
+node server.js
 ```
+
+### Frontend Development
+```bash
+# Frontend files are static HTML/CSS/JS in /frontend/ directory
+# Served automatically via Express static middleware at /public
+# Access frontend at: http://localhost:3000/frontend/index.html
+
+# Main pages:
+# - index.html (homepage)
+# - live tracking.html (real-time bus tracking with maps)
+# - routes.html (route information and schedules)
+# - services.html (service alerts and notifications)
+# - contact page.html (contact and support)
+```
+
+### Setup & Prerequisites
+```bash
+# Install dependencies
+npm install
+
+# MongoDB must be running
+# Default: mongodb://localhost:27017/bus-tracking
+# Application will exit if MongoDB is not accessible
+```
+
+### Testing & Debugging
+```bash
+# Run specific test scripts
+npm run test:city
+
+# Test API endpoints
+curl http://localhost:3000/
+curl http://localhost:3000/api/bus/BUS_001/location
+curl -X POST http://localhost:3000/api/driver/location -H "Content-Type: application/json" -d '{"busId": "BUS_001", "lat": 28.6139, "lng": 77.2090}'
+
 
 ## Architecture Overview
 
 ### Technology Stack
+**Backend:**
 - **Runtime**: Node.js
-- **Framework**: Express.js (fast, unopinionated web framework for Node.js routing)
+- **Framework**: Express.js
 - **Database**: MongoDB with Mongoose ODM
-- **Real-time Communication**: Socket.io
-- **Development**: Nodemon for auto-reloading
+- **Real-time**: Socket.io WebSocket connections
+- **Development**: Nodemon for auto-reload
+
+**Frontend:**
+- **Core**: Vanilla HTML5, CSS3, JavaScript (ES6+)
+- **Maps**: Leaflet.js for interactive maps
+- **Icons**: Font Awesome 6.0
+- **Styling**: Custom CSS with CSS Grid/Flexbox
+- **Mobile**: Responsive design with mobile-first approach
 
 ### Application Structure
-This is a classic MVC (Model-View-Controller) Node.js application with the following key architectural patterns:
+This is a full-stack application with a Node.js/Express backend API and a responsive frontend interface:
 
-#### Core Components
-1. **Entry Point** (`server.js`): Main application server that configures Express, Socket.io, and database connection
-2. **Database Configuration** (`config/database.js`): MongoDB connection setup using Mongoose
-3. **Models** (`models/`): Mongoose schemas for data persistence
-4. **Controllers** (`controllers/`): Business logic and request handling
-5. **Routes** (`routes/`): API endpoint definitions and route mappings
+#### Backend Components (MVC Architecture)
+1. **Entry Point** (`server.js`): Express server with Socket.io integration
+2. **Models** (`models/`): MongoDB schemas (Bus, Route, Driver, User, City, BusStop)
+3. **Controllers** (`controllers/`): Business logic for API endpoints
+4. **Routes** (`routes/`): RESTful API route definitions
+5. **Services** (`services/`): External API integrations and utility functions
+6. **Config** (`config/`): Database connection and environment configuration
 
-#### Data Models
-- **Bus Model**: Enhanced with driver tracking, passenger count, real-time status, and detailed bus information (capacity, amenities)
-- **Route Model**: Extended for city-to-city routes with segments, schedule information, fare structure, and route optimization
-- **Driver Model**: New model for tracking bus drivers with location, performance metrics, emergency features
-- **City Model**: New model for managing cities with geospatial boundaries and major terminals
-- **User Model**: Enhanced with trip tracking and location-based services
-- **BusStop Model**: Enhanced with external API integration and geospatial queries
-- **Relationships**: Complex relationships between cities, routes, buses, drivers, and users with full population support
+#### Frontend Components
+1. **Homepage** (`frontend/index.html`): Landing page with system overview
+2. **Live Tracking** (`frontend/live tracking.html`): Real-time bus map with Leaflet.js
+3. **Routes** (`frontend/routes.html`): Route schedules and information
+4. **Services** (`frontend/services.html`): Service alerts and notifications
+5. **Contact** (`frontend/contact page.html`): Support and contact forms
+
+#### Data Models (MongoDB Collections)
+- **Bus**: Real-time location, status, capacity, driver assignment, amenities
+- **Route**: City-to-city connections, segments, schedules, fare structure
+- **Driver**: Authentication, location tracking, performance metrics, emergency features
+- **City**: Geospatial boundaries, major terminals, statistics
+- **User**: Location tracking, trip history, preferences, authentication
+- **BusStop**: Geospatial data, external API integration, route associations
+
+#### Frontend Architecture
+- **Responsive Design**: Mobile-first CSS with breakpoints at 768px and 480px
+- **Real-time Updates**: JavaScript connects to Socket.io for live bus tracking
+- **Interactive Maps**: Leaflet.js with OpenStreetMap tiles, custom bus markers
+- **Progressive Enhancement**: Core functionality works without JavaScript
+- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+- **Multi-language**: Language selector (placeholder functionality)
 
 #### Real-time Architecture
 The application implements a dual-layer real-time update system:
@@ -88,10 +125,15 @@ The application implements a dual-layer real-time update system:
 - Population of related data (routes) in bus location responses
 
 ### Environment Configuration
-Required environment variables:
-- `PORT`: Server port (default: 3000)
-- `MONGODB_URI`: MongoDB connection string (default: mongodb://localhost:27017/bus-tracking)
-- `NODE_ENV`: Environment mode (development/production)
+```bash
+# Required environment variables
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/bus-tracking
+NODE_ENV=development
+
+# Optional external API keys (for production)
+GOOGLE_MAPS_API_KEY=your_api_key_here
+```
 
 ### Database Prerequisites
 - MongoDB must be running locally or accessible via MONGODB_URI
@@ -111,11 +153,20 @@ Required environment variables:
   - `busArrivalEstimate`, `routeBusUpdate`
 
 ### Key Development Considerations
+
+**Backend:**
 - Controllers access Socket.io via `req.app.get('io')` for real-time updates
-- Bus location updates trigger both database persistence and real-time broadcasts
-- Coordinate validation ensures lat/lng are within valid ranges
-- The application uses upsert pattern for bus location updates to handle new buses automatically
-- CORS is configured to allow all origins (`origin: "*"`) - consider restricting in production
+- Bus location updates trigger both database persistence and Socket.io broadcasts
+- Geospatial indexing on location fields for efficient proximity queries
+- Upsert operations handle new buses automatically
+- CORS configured to allow all origins - restrict in production
+
+**Frontend:**
+- Static files served via Express middleware (app.use('frontend', express.static('frontend')))
+- Live tracking page connects to Socket.io at runtime for bus updates
+- All CSS is embedded in HTML files (no external stylesheets)
+- Mock data used for demo purposes in live tracking interface
+- Maps require internet connection for tile loading
 
 ### New API Endpoints
 - **City Management**: `/api/cities/*` - City search, route discovery between cities
@@ -135,10 +186,33 @@ Required environment variables:
 - **Map Visualization**: Generate static maps showing routes, bus locations, and nearby stops
 - **Emergency System**: Driver panic button, real-time emergency alerts to admin dashboard
 
-### Missing Components
-- No authentication/authorization system implemented
-- No testing framework configured (consider Jest/Mocha for comprehensive testing)
-- No logging system beyond console.log statements (consider Winston or similar)
-- Complete API documentation available in `API_DOCUMENTATION.md`
-- No Docker configuration
-- No environment file template (.env.example)
+### Important Implementation Notes
+
+**Project Structure:**
+```
+bus-tracking-backend/
+├── frontend/                 # Static frontend files
+│   ├── index.html           # Homepage
+│   ├── live tracking.html   # Real-time tracking with maps
+│   ├── routes.html          # Route information
+│   ├── services.html        # Service alerts
+│   └── contact page.html    # Contact/support
+├── models/                  # MongoDB schemas
+├── controllers/             # API logic
+├── routes/                  # API endpoints
+├── services/                # External integrations
+├── config/                  # Configuration files
+└── server.js               # Main application entry
+```
+
+**Current Limitations:**
+- No authentication system (use mock data for development)
+- No formal testing framework (Jest/Mocha recommended)
+- Basic logging (console.log - consider Winston for production)
+- Frontend uses mock data for demonstrations
+- CORS allows all origins (secure for production)
+
+**External Dependencies:**
+- MongoDB must be running before starting server
+- Internet connection required for map tiles (OpenStreetMap)
+- Font Awesome CDN for icons

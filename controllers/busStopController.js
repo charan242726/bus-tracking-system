@@ -69,8 +69,7 @@ class BusStopController {
       // If a city query param is provided, filter by address.city (case-insensitive)
       if (city) {
         query['address.city'] = { $regex: `^${city}$`, $options: 'i' };
-      }Since we don't have a .env file, let's first create one with a MongoDB connection string. I'll create a .env file with a default local MongoDB connection:
-
+      }
       const busStops = await BusStop.find(query)
         .populate('routes.routeId', 'routeName routeId')
         .limit(limit * 1)

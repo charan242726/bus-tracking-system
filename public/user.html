@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Tracking - User Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .map-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            height: 80vh;
+        }
+
+        .section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 12px 12px 35px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+        }
+
+        .results-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .result-item:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .result-item.selected {
+            border-color: #667eea;
+            background: #f0f3ff;
+            box-shadow: 0 3px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .route-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .route-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .route-distance {
+            font-size: 12px;
+            color: #666;
+            background: #e9ecef;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+
+        .route-stops {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .live-buses {
+            margin-top: 20px;
+        }
+
+        .bus-item {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bus-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .bus-id {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .bus-status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .bus-distance {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+            background: #28a745;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-btn {
+            background: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .map-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quick-action-btn {
+            background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .quick-action-btn:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+            color: #667eea;
+        }
+
+        .quick-action-btn i {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .header-content {
+                padding: 0 10px;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .map-container {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1><i class="fas fa-bus"></i> Bus Tracker</h1>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span>Welcome, User!</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <!-- Journey Planner -->
+            <div class="section">
+                <h3 class="section-title">
+                    <i class="fas fa-route"></i>
+                    Plan Your Journey
+                </h3>
+                
+                <div id="alertContainer"></div>
+
+                <div class="input-group">
+                    <label>From</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <input type="text" id="fromLocation" placeholder="Enter pickup location" autocomplete="off">
+                    </div>
+                    <div id="fromSuggestions" class="suggestions" style="display: none;"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>To</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-map-pin"></i>
+                        <input type="text" id="toLocation" placeholder="Enter destination" autocomplete="off">
+                    </div>
+                    <div id="toSuggestions" class="suggestions" style="display: none;"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>City</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-city"></i>
+                        <select id="citySelect">
+                            <option value="">Select City</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn" id="searchBtn" onclick="searchRoutes()">
+                    <i class="fas fa-search"></i>
+                    Find Routes
+                </button>
+
+                <div class="quick-actions">
+                    <div class="quick-action-btn" onclick="getCurrentLocation()">
+                        <i class="fas fa-location-crosshairs"></i>
+                        Use GPS
+                    </div>
+                    <div class="quick-action-btn" onclick="swapLocations()">
+                        <i class="fas fa-exchange-alt"></i>
+                        Swap
+                    </div>
+                </div>
+            </div>
+
+            <!-- Route Results -->
+            <div class="section" id="routeResults" style="display: none;">
+                <h3 class="section-title">
+                    <i class="fas fa-list"></i>
+                    Available Routes
+                </h3>
+                
+                <div class="results-list" id="routesList"></div>
+            </div>
+
+            <!-- Live Bus Tracking -->
+            <div class="section" id="liveBusesSection" style="display: none;">
+                <h3 class="section-title">
+                    <i class="fas fa-bus"></i>
+                    Live Buses
+                    <span class="status-indicator"></span>
+                </h3>
+                
+                <div class="live-buses" id="liveBusesList"></div>
+            </div>
+
+            <!-- Nearby Bus Stops -->
+            <div class="section">
+                <h3 class="section-title">
+                    <i class="fas fa-map-signs"></i>
+                    Nearby Stops
+                </h3>
+                
+                <div class="results-list" id="nearbyStops">
+                    <p style="color: #666; font-size: 14px; text-align: center;">
+                        <i class="fas fa-info-circle"></i>
+                        Enable location to see nearby stops
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-controls">
+                <button class="map-btn" onclick="centerOnLocation()" title="Center on your location">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
+                <button class="map-btn" onclick="toggleTraffic()" title="Toggle traffic layer">
+                    <i class="fas fa-traffic-light"></i>
+                </button>
+                <button class="map-btn" onclick="fullscreenMap()" title="Fullscreen map">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let userMarker;
+        let busMarkers = {};
+        let routeLayer;
+        let socket;
+        let userLocation = null;
+        let selectedRoute = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            loadCities();
+            setupAutoComplete();
+            connectSocket();
+            getUserLocation();
+            setupLocationInputs();
+        });
+
+        function initializeMap() {
+            // Initialize map centered on Mumbai
+            map = L.map('map').setView([19.0760, 72.8777], 12);
+            
+            // Add tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add click event to map
+            map.on('click', function(e) {
+                addLocationMarker(e.latlng);
+            });
+        }
+
+        function connectSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                showAlert('Connected to live tracking system', 'success');
+            });
+
+            socket.on('busLocationUpdate', (data) => {
+                updateBusMarker(data);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from server');
+                showAlert('Disconnected from live tracking system', 'error');
+            });
+        }
+
+        async function loadCities() {
+            try {
+                const response = await fetch('/api/user/cities');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const citySelect = document.getElementById('citySelect');
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    
+                    data.data.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city._id;
+                        option.textContent = city.name;
+                        citySelect.appendChild(option);
+                    });
+                    
+                    // Set Mumbai as default
+                    const mumbaiOption = Array.from(citySelect.options).find(opt => opt.textContent === 'Mumbai');
+                    if (mumbaiOption) {
+                        mumbaiOption.selected = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading cities:', error);
+            }
+        }
+
+        function setupLocationInputs() {
+            const fromInput = document.getElementById('fromLocation');
+            const toInput = document.getElementById('toLocation');
+
+            let searchTimeout;
+
+            fromInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchPlaces(this.value, 'fromSuggestions');
+                }, 500);
+            });
+
+            toInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchPlaces(this.value, 'toSuggestions');
+                }, 500);
+            });
+        }
+
+        async function searchPlaces(query, suggestionsId) {
+            if (query.length < 3) {
+                document.getElementById(suggestionsId).style.display = 'none';
+                return;
+            }
+
+            try {
+                const cityId = document.getElementById('citySelect').value;
+                const response = await fetch(`/api/location/search?query=${encodeURIComponent(query)}&city=${cityId}`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    showSuggestions(data.data, suggestionsId);
+                } else {
+                    document.getElementById(suggestionsId).style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error searching places:', error);
+            }
+        }
+
+        function showSuggestions(places, suggestionsId) {
+            const container = document.getElementById(suggestionsId);
+            container.innerHTML = '';
+            container.style.display = 'block';
+            container.style.position = 'absolute';
+            container.style.background = 'white';
+            container.style.border = '1px solid #ddd';
+            container.style.borderRadius = '8px';
+            container.style.maxHeight = '200px';
+            container.style.overflowY = 'auto';
+            container.style.width = '100%';
+            container.style.zIndex = '1000';
+            container.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+
+            places.forEach(place => {
+                const item = document.createElement('div');
+                item.style.padding = '12px';
+                item.style.cursor = 'pointer';
+                item.style.borderBottom = '1px solid #eee';
+                item.textContent = place.name;
+                
+                item.addEventListener('click', function() {
+                    const inputId = suggestionsId.replace('Suggestions', 'Location');
+                    document.getElementById(inputId).value = place.name;
+                    container.style.display = 'none';
+                });
+
+                item.addEventListener('mouseenter', function() {
+                    item.style.background = '#f0f3ff';
+                });
+
+                item.addEventListener('mouseleave', function() {
+                    item.style.background = 'white';
+                });
+
+                container.appendChild(item);
+            });
+        }
+
+        async function searchRoutes() {
+            const fromLocation = document.getElementById('fromLocation').value.trim();
+            const toLocation = document.getElementById('toLocation').value.trim();
+            const cityId = document.getElementById('citySelect').value;
+            const searchBtn = document.getElementById('searchBtn');
+
+            if (!fromLocation || !toLocation) {
+                showAlert('Please enter both pickup and destination locations', 'error');
+                return;
+            }
+
+            if (!cityId) {
+                showAlert('Please select a city', 'error');
+                return;
+            }
+
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<span class="loading"></span> Searching...';
+
+            try {
+                const response = await fetch('/api/user/search-routes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        from: fromLocation,
+                        to: toLocation,
+                        cityId: cityId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayRoutes(data.data);
+                    showAlert(`Found ${data.data.length} route(s)`, 'success');
+                } else {
+                    showAlert(data.message || 'No routes found', 'error');
+                }
+            } catch (error) {
+                console.error('Error searching routes:', error);
+                showAlert('Error searching routes. Please try again.', 'error');
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Find Routes';
+            }
+        }
+
+        function displayRoutes(routes) {
+            const routesList = document.getElementById('routesList');
+            const routeResults = document.getElementById('routeResults');
+            
+            routesList.innerHTML = '';
+            
+            routes.forEach((route, index) => {
+                const routeItem = document.createElement('div');
+                routeItem.className = 'result-item';
+                routeItem.innerHTML = `
+                    <div class="route-info">
+                        <span class="route-name">${route.routeName}</span>
+                        <span class="route-distance">${route.distance || 'N/A'}</span>
+                    </div>
+                    <div class="route-stops">${route.totalStops} stops • ${route.estimatedDuration || 'N/A'} mins</div>
+                `;
+                
+                routeItem.addEventListener('click', function() {
+                    selectRoute(route, routeItem);
+                });
+                
+                routesList.appendChild(routeItem);
+            });
+            
+            routeResults.style.display = 'block';
+        }
+
+        function selectRoute(route, element) {
+            // Remove previous selection
+            document.querySelectorAll('.result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Select current route
+            element.classList.add('selected');
+            selectedRoute = route;
+            
+            // Display route on map
+            displayRouteOnMap(route);
+            
+            // Load live buses for this route
+            loadLiveBuses(route._id);
+        }
+
+        function displayRouteOnMap(route) {
+            // Clear previous route
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+
+            // Create route layer
+            routeLayer = L.layerGroup().addTo(map);
+
+            // Add bus stops as markers
+            route.stops.forEach((stop, index) => {
+                const marker = L.marker([stop.location.latitude, stop.location.longitude])
+                    .bindPopup(`
+                        <strong>${stop.name}</strong><br>
+                        Stop ${index + 1} of ${route.stops.length}<br>
+                        <small>${stop.description || 'Bus stop'}</small>
+                    `);
+                routeLayer.addLayer(marker);
+            });
+
+            // Fit map to route bounds
+            if (route.stops.length > 0) {
+                const group = new L.featureGroup(routeLayer.getLayers());
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        }
+
+        async function loadLiveBuses(routeId) {
+            try {
+                const response = await fetch(`/api/user/live-buses/${routeId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayLiveBuses(data.data);
+                    document.getElementById('liveBusesSection').style.display = 'block';
+                } else {
+                    document.getElementById('liveBusesSection').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading live buses:', error);
+            }
+        }
+
+        function displayLiveBuses(buses) {
+            const liveList = document.getElementById('liveBusesList');
+            liveList.innerHTML = '';
+
+            buses.forEach(bus => {
+                const busItem = document.createElement('div');
+                busItem.className = 'bus-item';
+                busItem.innerHTML = `
+                    <div class="bus-info">
+                        <div class="bus-id">🚌 ${bus.busId}</div>
+                        <div class="bus-status">
+                            <span class="status-indicator"></span>
+                            ${bus.speed || 0} km/h • ${bus.passengerCount || 0} passengers
+                        </div>
+                    </div>
+                    <div class="bus-distance">${bus.distance || 'N/A'}</div>
+                `;
+
+                busItem.addEventListener('click', function() {
+                    centerOnBus(bus);
+                });
+
+                liveList.appendChild(busItem);
+            });
+        }
+
+        function updateBusMarker(busData) {
+            const { busId, location, speed, passengerCount } = busData;
+            
+            // Remove existing marker
+            if (busMarkers[busId]) {
+                map.removeLayer(busMarkers[busId]);
+            }
+
+            // Create bus icon
+            const busIcon = L.divIcon({
+                html: `<div style="background: #28a745; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">🚌</div>`,
+                className: 'bus-marker',
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+
+            // Add new marker
+            const marker = L.marker([location.latitude, location.longitude], { icon: busIcon })
+                .bindPopup(`
+                    <strong>Bus ${busId}</strong><br>
+                    Speed: ${speed || 0} km/h<br>
+                    Passengers: ${passengerCount || 0}<br>
+                    <small>Live tracking active</small>
+                `);
+
+            busMarkers[busId] = marker;
+            marker.addTo(map);
+        }
+
+        function centerOnBus(bus) {
+            if (bus.location) {
+                map.setView([bus.location.latitude, bus.location.longitude], 15);
+                
+                if (busMarkers[bus.busId]) {
+                    busMarkers[bus.busId].openPopup();
+                }
+            }
+        }
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        
+                        // Add user marker
+                        if (userMarker) {
+                            map.removeLayer(userMarker);
+                        }
+                        
+                        const userIcon = L.divIcon({
+                            html: `<div style="background: #007bff; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3);"><i class="fas fa-user" style="font-size: 10px;"></i></div>`,
+                            className: 'user-marker',
+                            iconSize: [20, 20],
+                            iconAnchor: [10, 10]
+                        });
+                        
+                        userMarker = L.marker([userLocation.lat, userLocation.lng], { icon: userIcon })
+                            .bindPopup('Your Location')
+                            .addTo(map);
+                        
+                        // Load nearby stops
+                        loadNearbyStops();
+                        
+                        showAlert('Location detected successfully', 'success');
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        showAlert('Could not get your location. Please enable GPS.', 'error');
+                    }
+                );
+            }
+        }
+
+        async function loadNearbyStops() {
+            if (!userLocation) return;
+
+            try {
+                const response = await fetch(`/api/user/nearby-stops?lat=${userLocation.lat}&lng=${userLocation.lng}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    displayNearbyStops(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading nearby stops:', error);
+            }
+        }
+
+        function displayNearbyStops(stops) {
+            const container = document.getElementById('nearbyStops');
+            container.innerHTML = '';
+
+            stops.forEach(stop => {
+                const stopItem = document.createElement('div');
+                stopItem.className = 'result-item';
+                stopItem.innerHTML = `
+                    <div class="route-info">
+                        <span class="route-name">${stop.name}</span>
+                        <span class="route-distance">${stop.distance}m</span>
+                    </div>
+                    <div class="route-stops">${stop.description || 'Bus stop'}</div>
+                `;
+
+                stopItem.addEventListener('click', function() {
+                    map.setView([stop.location.latitude, stop.location.longitude], 16);
+                });
+
+                container.appendChild(stopItem);
+            });
+        }
+
+        function getCurrentLocation() {
+            getUserLocation();
+        }
+
+        function swapLocations() {
+            const fromInput = document.getElementById('fromLocation');
+            const toInput = document.getElementById('toLocation');
+            
+            const temp = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = temp;
+        }
+
+        function centerOnLocation() {
+            if (userLocation) {
+                map.setView([userLocation.lat, userLocation.lng], 15);
+                if (userMarker) {
+                    userMarker.openPopup();
+                }
+            } else {
+                showAlert('Location not available. Please enable GPS.', 'error');
+            }
+        }
+
+        function toggleTraffic() {
+            showAlert('Traffic layer not available in demo mode', 'info');
+        }
+
+        function fullscreenMap() {
+            const mapContainer = document.querySelector('.map-container');
+            if (mapContainer.requestFullscreen) {
+                mapContainer.requestFullscreen();
+            }
+        }
+
+        function addLocationMarker(latlng) {
+            // For future enhancement: allow users to add custom locations
+            console.log('Location clicked:', latlng);
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = '/';
+                }
+        }
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.input-wrapper')) {
+                document.querySelectorAll('.suggestions').forEach(s => s.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>

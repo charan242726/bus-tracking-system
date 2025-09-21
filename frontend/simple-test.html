@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Language Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        button { padding: 10px 20px; margin: 5px; }
+        select { padding: 10px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Simple Language Test</h1>
+    
+    <div class="test">
+        <h2>Language Selector</h2>
+        <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+        </select>
+        <button onclick="changeLanguageManually()">Change Language</button>
+    </div>
+
+    <div class="test">
+        <h2>Test Content</h2>
+        <p id="testText" data-i18n="hero.title">Real-Time Public Transit Tracking</p>
+        <p id="testText2" data-i18n="features.title">System Features</p>
+    </div>
+
+    <div class="test">
+        <h2>Direct Translation Test</h2>
+        <button onclick="testDirectTranslation()">Test Direct Translation</button>
+        <div id="directResult"></div>
+    </div>
+
+    <script>
+        // Simple translations object
+        const translations = {
+            en: {
+                'hero.title': 'Real-Time Public Transit Tracking',
+                'features.title': 'System Features'
+            },
+            es: {
+                'hero.title': 'Seguimiento de Transporte Público en Tiempo Real',
+                'features.title': 'Características del Sistema'
+            }
+        };
+
+        function translate(key, lang) {
+            return translations[lang] && translations[lang][key] || key;
+        }
+
+        function applyTranslations(lang) {
+            console.log('Applying translations for:', lang);
+            const elements = document.querySelectorAll('[data-i18n]');
+            console.log('Found elements:', elements.length);
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translation = translate(key, lang);
+                console.log(`${key}: "${el.textContent}" -> "${translation}"`);
+                el.textContent = translation;
+            });
+        }
+
+        function changeLanguageManually() {
+            const select = document.getElementById('languageSelect');
+            const lang = select.value;
+            console.log('Changing language to:', lang);
+            applyTranslations(lang);
+        }
+
+        function testDirectTranslation() {
+            const result = document.getElementById('directResult');
+            const en = translate('hero.title', 'en');
+            const es = translate('hero.title', 'es');
+            
+            result.innerHTML = `
+                <p>EN: ${en}</p>
+                <p>ES: ${es}</p>
+            `;
+            
+            console.log('Direct translation test:', { en, es });
+        }
+
+        // Set up event listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('languageSelect');
+            select.addEventListener('change', (e) => {
+                console.log('Select changed to:', e.target.value);
+                applyTranslations(e.target.value);
+            });
+        });
+
+        console.log('Simple test page loaded');
+        console.log('Available translations:', translations);
+    </script>
+</body>
+</html>

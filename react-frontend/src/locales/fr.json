@@ -1,0 +1,130 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "liveTracking": "Suivi en Direct",
+    "routes": "Itinéraires",
+    "services": "Services",
+    "contact": "Contact",
+    "fullscreen": "Plein Écran",
+    "language": "Langue"
+  },
+  "hero": {
+    "title": "Suivi des Transports Publics en Temps Réel",
+    "subtitle": "Surveillez les emplacements, horaires et itinéraires des bus avec notre système de suivi avancé. Assurant un transport public efficace et fiable pour tous les citoyens.",
+    "trackBus": "Suivre le Bus Maintenant",
+    "viewRoutes": "Voir les Itinéraires"
+  },
+  "features": {
+    "title": "Fonctionnalités du Système",
+    "gps": {
+      "title": "Suivi GPS",
+      "desc": "Surveillance GPS en temps réel de tous les bus avec des mises à jour de localisation précises toutes les 30 secondes."
+    },
+    "schedule": {
+      "title": "Gestion des Horaires",
+      "desc": "Suivi automatisé des horaires avec des mises à jour en temps réel sur les retards, arrivées anticipées et modifications d'itinéraires."
+    },
+    "mobile": {
+      "title": "Accès Mobile",
+      "desc": "Conception web responsive accessible sur tous les appareils, permettant aux citoyens d'accéder aux informations de transport n'importe où."
+    },
+    "analytics": {
+      "title": "Tableau de Bord Analytique",
+      "desc": "Rapports complets et analyses pour l'optimisation des itinéraires et la surveillance des performances."
+    },
+    "alerts": {
+      "title": "Système d'Alerte",
+      "desc": "Notifications automatiques pour les perturbations de service, retards et annonces importantes de transport."
+    },
+    "security": {
+      "title": "Plateforme Sécurisée",
+      "desc": "Sécurité de niveau gouvernemental garantissant la protection des données et la fiabilité du système pour l'usage public."
+    }
+  },
+  "stats": {
+    "buses": "Bus Actifs",
+    "routes": "Itinéraires Couverts",
+    "passengers": "Passagers Quotidiens",
+    "uptime": "Temps de Fonctionnement du Système"
+  },
+  "quickAccess": {
+    "title": "Accès Rapide",
+    "nearestStop": {
+      "title": "Trouver l'Arrêt le Plus Proche",
+      "desc": "Localisez l'arrêt de bus le plus proche de votre position actuelle avec directions piétonnes."
+    },
+    "schedule": {
+      "title": "Recherche d'Horaires",
+      "desc": "Consultez les horaires des bus et planifiez votre voyage avec les heures d'arrivée et de départ."
+    },
+    "alerts": {
+      "title": "Alertes de Service",
+      "desc": "Restez informé des perturbations de service, retards et changements d'itinéraires."
+    },
+    "support": {
+      "title": "Centre de Support",
+      "desc": "Contactez notre équipe de support 24h/24 et 7j/7 pour assistance et demandes."
+    }
+  },
+  "tracking": {
+    "title": "Contrôle de Suivi des Bus",
+    "mapView": "Vue Carte",
+    "listView": "Vue Liste",
+    "searchPlaceholder": "Rechercher par itinéraire, numéro de bus ou destination...",
+    "filterAll": "Tous",
+    "filterRoute": "Itinéraire",
+    "filterNearby": "À Proximité",
+    "filterExpress": "Express",
+    "filterLocal": "Local",
+    "filterDelayed": "Retardés",
+    "autoRefresh": "Actualisation Automatique",
+    "refreshRate": "Fréquence d'Actualisation",
+    "showTraffic": "Afficher le Trafic",
+    "soundAlerts": "Alertes Sonores",
+    "highContrast": "Contraste Élevé",
+    "busInfo": "Informations sur le Bus",
+    "busNumber": "Numéro de Bus",
+    "route": "Itinéraire",
+    "speed": "Vitesse et Direction Actuelles",
+    "driver": "Conducteur",
+    "capacity": "Capacité de Passagers",
+    "nextStops": "Prochains Arrêts",
+    "loading": "Chargement des emplacements des bus..."
+  },
+  "status": {
+    "active": "Actif",
+    "delayed": "Retardé",
+    "stopped": "Arrêté",
+    "offline": "Hors ligne"
+  },
+  "time": {
+    "seconds": "secondes",
+    "minute": "minute",
+    "minutes": "minutes"
+  },
+  "notification": {
+    "languageChanged": "Langue changée en",
+    "locationFound": "Votre position a été trouvée",
+    "locationError": "Impossible d'obtenir votre position. Veuillez activer les services de localisation.",
+    "busSelected": "Bus sélectionné",
+    "busUpdated": "Emplacements des bus mis à jour",
+    "offline": "Utilisation des données hors ligne"
+  },
+  "footer": {
+    "department": "Département des Transports",
+    "description": "Engagés à fournir des services de transport public sûrs, efficaces et fiables pour tous les citoyens.",
+    "quickLinks": "Liens Rapides",
+    "routeMaps": "Cartes des Itinéraires",
+    "schedules": "Horaires",
+    "serviceAlerts": "Alertes de Service",
+    "support": "Support",
+    "helpCenter": "Centre d'Aide",
+    "contactUs": "Nous Contacter",
+    "feedback": "Commentaires",
+    "accessibility": "Accessibilité",
+    "contact": "Informations de Contact",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation"
+  }
+}

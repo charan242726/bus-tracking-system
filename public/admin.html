@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Tracking - Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 70px;
+            width: 250px;
+            height: calc(100vh - 70px);
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+            border-left-color: #dc3545;
+        }
+
+        .nav-item.active {
+            background: #fff5f5;
+            border-left-color: #dc3545;
+            color: #dc3545;
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            max-width: calc(100vw - 250px);
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .card-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-change.positive {
+            color: #28a745;
+        }
+
+        .card-change.negative {
+            color: #dc3545;
+        }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+            color: #212529;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .map-container {
+            height: 500px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 15px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <h1><i class="fas fa-shield-alt"></i> Admin Dashboard</h1>
+            </div>
+            <div class="admin-info">
+                <div class="admin-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <span>Admin Panel</span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <nav class="sidebar-nav">
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-pie"></i>
+                Dashboard
+            </div>
+            <div class="nav-item" onclick="showSection('buses')">
+                <i class="fas fa-bus"></i>
+                Bus Management
+            </div>
+            <div class="nav-item" onclick="showSection('drivers')">
+                <i class="fas fa-users"></i>
+                Driver Management
+            </div>
+            <div class="nav-item" onclick="showSection('routes')">
+                <i class="fas fa-route"></i>
+                Route Management
+            </div>
+            <div class="nav-item" onclick="showSection('users')">
+                <i class="fas fa-user-friends"></i>
+                User Management
+            </div>
+            <div class="nav-item" onclick="showSection('analytics')">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </div>
+            <div class="nav-item" onclick="showSection('realtime')">
+                <i class="fas fa-broadcast-tower"></i>
+                Live Tracking
+            </div>
+            <div class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                System Settings
+            </div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div id="alertContainer"></div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="section-title">
+                <i class="fas fa-chart-pie"></i>
+                System Overview
+            </div>
+
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Total Buses</span>
+                        <div class="card-icon" style="background: linear-gradient(135deg, #28a745, #20c997)">
+                            <i class="fas fa-bus"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="totalBuses">0</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+5 this month</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Active Drivers</span>
+                        <div class="card-icon" style="background: linear-gradient(135deg, #007bff, #0056b3)">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="activeDrivers">0</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12 this week</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Total Routes</span>
+                        <div class="card-icon" style="background: linear-gradient(135deg, #6f42c1, #5a3a9e)">
+                            <i class="fas fa-route"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="totalRoutes">0</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+3 this month</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Daily Users</span>
+                        <div class="card-icon" style="background: linear-gradient(135deg, #fd7e14, #e8590c)">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                    </div>
+                    <div class="card-value" id="dailyUsers">0</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+8.5% today</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">System Status</div>
+                <div class="chart-container">
+                    <canvas id="systemChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bus Management Section -->
+        <div id="buses" class="section">
+            <div class="section-title">
+                <i class="fas fa-bus"></i>
+                Bus Fleet Management
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="openModal('addBusModal')">
+                    <i class="fas fa-plus"></i>
+                    Add New Bus
+                </button>
+                <button class="btn btn-info" onclick="importBusData()">
+                    <i class="fas fa-upload"></i>
+                    Import Bus Data
+                </button>
+                <button class="btn btn-warning" onclick="exportBusData()">
+                    <i class="fas fa-download"></i>
+                    Export Data
+                </button>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" id="busSearch" placeholder="Search buses by ID, route, or status...">
+            </div>
+
+            <table class="data-table" id="busTable">
+                <thead>
+                    <tr>
+                        <th>Bus ID</th>
+                        <th>Route</th>
+                        <th>Driver</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Passengers</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">Loading buses...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Driver Management Section -->
+        <div id="drivers" class="section">
+            <div class="section-title">
+                <i class="fas fa-users"></i>
+                Driver Management
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="openModal('addDriverModal')">
+                    <i class="fas fa-plus"></i>
+                    Add New Driver
+                </button>
+                <button class="btn btn-info" onclick="sendAnnouncement()">
+                    <i class="fas fa-bullhorn"></i>
+                    Send Announcement
+                </button>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" id="driverSearch" placeholder="Search drivers by name, ID, or status...">
+            </div>
+
+            <table class="data-table" id="driverTable">
+                <thead>
+                    <tr>
+                        <th>Driver ID</th>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Current Bus</th>
+                        <th>Shift</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">Loading drivers...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Route Management Section -->
+        <div id="routes" class="section">
+            <div class="section-title">
+                <i class="fas fa-route"></i>
+                Route Network Management
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="openModal('addRouteModal')">
+                    <i class="fas fa-plus"></i>
+                    Add New Route
+                </button>
+                <button class="btn btn-info" onclick="optimizeRoutes()">
+                    <i class="fas fa-magic"></i>
+                    Optimize Routes
+                </button>
+                <button class="btn btn-warning" onclick="importStopsFromOSM()">
+                    <i class="fas fa-map"></i>
+                    Import from OSM
+                </button>
+            </div>
+
+            <div class="map-container">
+                <div id="routeMap"></div>
+            </div>
+
+            <table class="data-table" id="routeTable">
+                <thead>
+                    <tr>
+                        <th>Route Name</th>
+                        <th>Total Stops</th>
+                        <th>Distance</th>
+                        <th>Duration</th>
+                        <th>Active Buses</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">Loading routes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="section">
+            <div class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Analytics & Reports
+            </div>
+
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="section-title">Usage Analytics</div>
+                    <div class="chart-container">
+                        <canvas id="usageChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">Route Performance</div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real-time Tracking Section -->
+        <div id="realtime" class="section">
+            <div class="section-title">
+                <i class="fas fa-broadcast-tower"></i>
+                Live Bus Tracking
+            </div>
+
+            <div class="map-container">
+                <div id="liveMap"></div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">Active Buses</div>
+                <div id="liveBusList"></div>
+            </div>
+        </div>
+
+        <!-- System Settings Section -->
+        <div id="settings" class="section">
+            <div class="section-title">
+                <i class="fas fa-cog"></i>
+                System Configuration
+            </div>
+
+            <div class="card">
+                <div class="section-title">API Configuration</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Google Maps API Key</label>
+                        <input type="text" class="form-control" id="googleMapsKey" placeholder="Enter Google Maps API key">
+                    </div>
+                    <div class="form-group">
+                        <label>MapBox Access Token</label>
+                        <input type="text" class="form-control" id="mapboxToken" placeholder="Enter MapBox access token">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>LocationIQ Token</label>
+                        <input type="text" class="form-control" id="locationiqToken" placeholder="Enter LocationIQ token">
+                    </div>
+                    <div class="form-group">
+                        <label>Twilio Account SID</label>
+                        <input type="text" class="form-control" id="twilioSid" placeholder="Enter Twilio SID">
+                    </div>
+                </div>
+                <button class="btn" onclick="saveAPISettings()">
+                    <i class="fas fa-save"></i>
+                    Save API Settings
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="section-title">System Preferences</div>
+                <div class="form-group">
+                    <label>Default City</label>
+                    <select class="form-control" id="defaultCity">
+                        <option value="mumbai">Mumbai</option>
+                        <option value="pune">Pune</option>
+                        <option value="delhi">Delhi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tracking Interval (seconds)</label>
+                    <input type="number" class="form-control" id="trackingInterval" value="30">
+                </div>
+                <button class="btn" onclick="saveSystemSettings()">
+                    <i class="fas fa-save"></i>
+                    Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Bus Modal -->
+    <div id="addBusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Bus</h3>
+                <button class="close-btn" onclick="closeModal('addBusModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Bus ID</label>
+                    <input type="text" class="form-control" id="newBusId" placeholder="Enter unique bus ID">
+                </div>
+                <div class="form-group">
+                    <label>License Plate</label>
+                    <input type="text" class="form-control" id="newBusPlate" placeholder="Enter license plate">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Capacity</label>
+                        <input type="number" class="form-control" id="newBusCapacity" placeholder="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select class="form-control" id="newBusType">
+                            <option value="standard">Standard</option>
+                            <option value="ac">AC Bus</option>
+                            <option value="electric">Electric</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="saveBus()">
+                        <i class="fas fa-save"></i>
+                        Save Bus
+                    </button>
+                    <button class="btn" onclick="closeModal('addBusModal')" style="background: #6c757d;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div id="addDriverModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Driver</h3>
+                <button class="close-btn" onclick="closeModal('addDriverModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Driver ID</label>
+                        <input type="text" class="form-control" id="newDriverId" placeholder="Enter driver ID">
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" id="newDriverName" placeholder="Enter full name">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" class="form-control" id="newDriverPhone" placeholder="+91 9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" id="newDriverEmail" placeholder="driver@example.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>License Number</label>
+                    <input type="text" class="form-control" id="newDriverLicense" placeholder="Enter license number">
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="saveDriver()">
+                        <i class="fas fa-save"></i>
+                        Save Driver
+                    </button>
+                    <button class="btn" onclick="closeModal('addDriverModal')" style="background: #6c757d;">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let socket;
+        let routeMap, liveMap;
+        let systemChart, usageChart, performanceChart;
+
+        // Initialize admin dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            connectSocket();
+            loadDashboardData();
+            initializeCharts();
+            initializeMaps();
+            setupSearch();
+        });
+
+        function connectSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('Admin connected to server');
+                showAlert('Connected to live system', 'success');
+            });
+
+            socket.on('busLocationUpdate', (data) => {
+                updateLiveBusTracking(data);
+            });
+
+            socket.on('driverUpdate', (data) => {
+                updateDriverStatus(data);
+            });
+
+            socket.on('emergencyAlert', (data) => {
+                handleEmergencyAlert(data);
+            });
+
+            socket.on('disconnect', () => {
+                showAlert('Disconnected from system', 'error');
+            });
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Load overview statistics
+                const [buses, drivers, routes, users] = await Promise.all([
+                    fetch('/api/admin/buses').then(r => r.json()),
+                    fetch('/api/admin/drivers').then(r => r.json()),
+                    fetch('/api/admin/routes').then(r => r.json()),
+                    fetch('/api/admin/users').then(r => r.json())
+                ]);
+
+                // Update dashboard cards
+                document.getElementById('totalBuses').textContent = buses.data?.length || 0;
+                document.getElementById('activeDrivers').textContent = drivers.data?.filter(d => d.status === 'active').length || 0;
+                document.getElementById('totalRoutes').textContent = routes.data?.length || 0;
+                document.getElementById('dailyUsers').textContent = users.data?.length || 0;
+
+                // Load table data
+                loadBusTable(buses.data || []);
+                loadDriverTable(drivers.data || []);
+                loadRouteTable(routes.data || []);
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showAlert('Error loading dashboard data', 'error');
+            }
+        }
+
+        function loadBusTable(buses) {
+            const tbody = document.querySelector('#busTable tbody');
+            tbody.innerHTML = '';
+
+            buses.forEach(bus => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${bus.busId}</td>
+                    <td>${bus.route?.name || 'Not assigned'}</td>
+                    <td>${bus.driver?.name || 'Not assigned'}</td>
+                    <td><span class="status-badge status-${bus.status}">${bus.status}</span></td>
+                    <td>${bus.currentLocation ? `${bus.currentLocation.latitude?.toFixed(4)}, ${bus.currentLocation.longitude?.toFixed(4)}` : 'Unknown'}</td>
+                    <td>${bus.passengerCount || 0}/${bus.capacity}</td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="editBus('${bus._id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #dc3545;" onclick="deleteBus('${bus._id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadDriverTable(drivers) {
+            const tbody = document.querySelector('#driverTable tbody');
+            tbody.innerHTML = '';
+
+            drivers.forEach(driver => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${driver.driverId}</td>
+                    <td>${driver.name}</td>
+                    <td>${driver.phone}</td>
+                    <td><span class="status-badge status-${driver.status}">${driver.status}</span></td>
+                    <td>${driver.currentBus?.busId || 'Not assigned'}</td>
+                    <td>${driver.currentShift || 'Off duty'}</td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="editDriver('${driver._id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #dc3545;" onclick="suspendDriver('${driver._id}')">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadRouteTable(routes) {
+            const tbody = document.querySelector('#routeTable tbody');
+            tbody.innerHTML = '';
+
+            routes.forEach(route => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${route.routeName}</td>
+                    <td>${route.stops?.length || 0}</td>
+                    <td>${route.distance || 'N/A'}</td>
+                    <td>${route.estimatedDuration || 'N/A'}</td>
+                    <td>${route.activeBuses?.length || 0}</td>
+                    <td><span class="status-badge status-${route.status}">${route.status}</span></td>
+                    <td>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px;" onclick="editRoute('${route._id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn" style="padding: 5px 10px; font-size: 12px; background: #28a745;" onclick="viewRoute('${route._id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function initializeCharts() {
+            // System Overview Chart
+            const systemCtx = document.getElementById('systemChart').getContext('2d');
+            systemChart = new Chart(systemCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active Buses', 'Maintenance', 'Offline'],
+                    datasets: [{
+                        data: [65, 15, 20],
+                        backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Usage Analytics Chart
+            const usageCtx = document.getElementById('usageChart').getContext('2d');
+            usageChart = new Chart(usageCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Daily Users',
+                        data: [1200, 1900, 3000, 5000, 2000, 3000],
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Route 1', 'Route 2', 'Route 3', 'Route 4', 'Route 5'],
+                    datasets: [{
+                        label: 'On-time Performance (%)',
+                        data: [85, 92, 78, 95, 88],
+                        backgroundColor: ['#28a745', '#20c997', '#ffc107', '#28a745', '#17a2b8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeMaps() {
+            // Route management map
+            routeMap = L.map('routeMap').setView([19.0760, 72.8777], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(routeMap);
+
+            // Live tracking map
+            liveMap = L.map('liveMap').setView([19.0760, 72.8777], 11);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(liveMap);
+        }
+
+        function setupSearch() {
+            // Bus search
+            document.getElementById('busSearch').addEventListener('input', function() {
+                filterTable('busTable', this.value);
+            });
+
+            // Driver search
+            document.getElementById('driverSearch').addEventListener('input', function() {
+                filterTable('driverTable', this.value);
+            });
+        }
+
+        function filterTable(tableId, searchTerm) {
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm.toLowerCase()) ? '' : 'none';
+            }
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active to clicked nav item
+            event.target.classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        async function saveBus() {
+            const busData = {
+                busId: document.getElementById('newBusId').value,
+                licensePlate: document.getElementById('newBusPlate').value,
+                capacity: document.getElementById('newBusCapacity').value,
+                type: document.getElementById('newBusType').value
+            };
+
+            if (!busData.busId || !busData.licensePlate) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/buses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(busData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Bus added successfully', 'success');
+                    closeModal('addBusModal');
+                    loadDashboardData();
+                } else {
+                    showAlert(data.message || 'Failed to add bus', 'error');
+                }
+            } catch (error) {
+                showAlert('Error adding bus', 'error');
+            }
+        }
+
+        async function saveDriver() {
+            const driverData = {
+                driverId: document.getElementById('newDriverId').value,
+                name: document.getElementById('newDriverName').value,
+                phone: document.getElementById('newDriverPhone').value,
+                email: document.getElementById('newDriverEmail').value,
+                licenseNumber: document.getElementById('newDriverLicense').value
+            };
+
+            if (!driverData.driverId || !driverData.name || !driverData.phone) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/admin/drivers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(driverData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Driver added successfully', 'success');
+                    closeModal('addDriverModal');
+                    loadDashboardData();
+                } else {
+                    showAlert(data.message || 'Failed to add driver', 'error');
+                }
+            } catch (error) {
+                showAlert('Error adding driver', 'error');
+            }
+        }
+
+        async function importStopsFromOSM() {
+            showAlert('Importing bus stop data from OpenStreetMap...', 'info');
+
+            try {
+                const response = await fetch('/api/admin/import-osm-stops', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert(`Imported ${data.count} bus stops from OSM`, 'success');
+                    loadDashboardData();
+                } else {
+                    showAlert(data.message || 'Failed to import OSM data', 'error');
+                }
+            } catch (error) {
+                showAlert('Error importing OSM data', 'error');
+            }
+        }
+
+        async function optimizeRoutes() {
+            showAlert('Optimizing routes using external APIs...', 'info');
+
+            try {
+                const response = await fetch('/api/admin/optimize-routes', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Routes optimized successfully', 'success');
+                    loadDashboardData();
+                } else {
+                    showAlert(data.message || 'Failed to optimize routes', 'error');
+                }
+            } catch (error) {
+                showAlert('Error optimizing routes', 'error');
+            }
+        }
+
+        function updateLiveBusTracking(busData) {
+            // Update live bus tracking on the map
+            // This would be implemented with real marker updates
+            console.log('Bus location update:', busData);
+        }
+
+        function updateDriverStatus(driverData) {
+            // Update driver status in real-time
+            console.log('Driver status update:', driverData);
+        }
+
+        function handleEmergencyAlert(alertData) {
+            // Handle emergency alerts from drivers
+            showAlert(`🚨 EMERGENCY: ${alertData.message} - Bus ${alertData.busId}`, 'error');
+            
+            // You could also show a modal or take immediate action
+        }
+
+        function sendAnnouncement() {
+            const message = prompt('Enter announcement message:');
+            if (message) {
+                socket.emit('adminAnnouncement', { message });
+                showAlert('Announcement sent to all drivers', 'success');
+            }
+        }
+
+        function saveAPISettings() {
+            const settings = {
+                googleMapsKey: document.getElementById('googleMapsKey').value,
+                mapboxToken: document.getElementById('mapboxToken').value,
+                locationiqToken: document.getElementById('locationiqToken').value,
+                twilioSid: document.getElementById('twilioSid').value
+            };
+
+            // Save settings to backend
+            fetch('/api/admin/settings/api', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('API settings saved successfully', 'success');
+                } else {
+                    showAlert('Failed to save settings', 'error');
+                }
+            });
+        }
+
+        function saveSystemSettings() {
+            const settings = {
+                defaultCity: document.getElementById('defaultCity').value,
+                trackingInterval: document.getElementById('trackingInterval').value
+            };
+
+            fetch('/api/admin/settings/system', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('System settings saved successfully', 'success');
+                } else {
+                    showAlert('Failed to save settings', 'error');
+                }
+            });
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                    window.location.href = '/';
+                }
+        }
+
+        // Placeholder functions for edit/delete operations
+        function editBus(busId) { showAlert('Edit bus functionality will be implemented', 'info'); }
+        function deleteBus(busId) { showAlert('Delete bus functionality will be implemented', 'info'); }
+        function editDriver(driverId) { showAlert('Edit driver functionality will be implemented', 'info'); }
+        function suspendDriver(driverId) { showAlert('Suspend driver functionality will be implemented', 'info'); }
+        function editRoute(routeId) { showAlert('Edit route functionality will be implemented', 'info'); }
+        function viewRoute(routeId) { showAlert('View route functionality will be implemented', 'info'); }
+        function importBusData() { showAlert('Import bus data functionality will be implemented', 'info'); }
+        function exportBusData() { showAlert('Export bus data functionality will be implemented', 'info'); }
+    </script>
+</body>
+</html>

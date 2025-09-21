@@ -1,0 +1,130 @@
+{
+  "nav": {
+    "home": "首页",
+    "liveTracking": "实时跟踪",
+    "routes": "路线",
+    "services": "服务",
+    "contact": "联系",
+    "fullscreen": "全屏",
+    "language": "语言"
+  },
+  "hero": {
+    "title": "实时公共交通跟踪",
+    "subtitle": "使用我们的先进跟踪系统监控公交车位置、时刻表和路线。为所有公民确保高效可靠的公共交通。",
+    "trackBus": "立即跟踪公交车",
+    "viewRoutes": "查看路线"
+  },
+  "features": {
+    "title": "系统特性",
+    "gps": {
+      "title": "GPS跟踪",
+      "desc": "对所有公交车进行实时GPS监控，每30秒提供精确的位置更新。"
+    },
+    "schedule": {
+      "title": "时刻表管理",
+      "desc": "自动化时刻表跟踪，实时更新延误、提前到达和路线修改信息。"
+    },
+    "mobile": {
+      "title": "移动访问",
+      "desc": "在所有设备上可访问的响应式网页设计，确保公民可以随时随地获取交通信息。"
+    },
+    "analytics": {
+      "title": "分析仪表板",
+      "desc": "用于路线优化和性能监控的综合报告和分析。"
+    },
+    "alerts": {
+      "title": "警报系统",
+      "desc": "自动通知服务中断、延误和重要交通公告。"
+    },
+    "security": {
+      "title": "安全平台",
+      "desc": "政府级安全保障数据保护和系统可靠性，供公众使用。"
+    }
+  },
+  "stats": {
+    "buses": "活跃公交车",
+    "routes": "覆盖路线",
+    "passengers": "每日乘客",
+    "uptime": "系统正常运行时间"
+  },
+  "quickAccess": {
+    "title": "快速访问",
+    "nearestStop": {
+      "title": "查找最近站点",
+      "desc": "找到距离您当前位置最近的公交站点并提供步行路线。"
+    },
+    "schedule": {
+      "title": "时刻表查询",
+      "desc": "查看公交时刻表并规划您的行程，包含到达和出发时间。"
+    },
+    "alerts": {
+      "title": "服务警报",
+      "desc": "及时了解服务中断、延误和路线变更信息。"
+    },
+    "support": {
+      "title": "支持中心",
+      "desc": "联系我们的24/7支持团队获取帮助和咨询。"
+    }
+  },
+  "tracking": {
+    "title": "公交跟踪控制",
+    "mapView": "地图视图",
+    "listView": "列表视图",
+    "searchPlaceholder": "按路线、公交车号码或目的地搜索...",
+    "filterAll": "全部",
+    "filterRoute": "路线",
+    "filterNearby": "附近",
+    "filterExpress": "快线",
+    "filterLocal": "本地",
+    "filterDelayed": "延误",
+    "autoRefresh": "自动刷新",
+    "refreshRate": "刷新频率",
+    "showTraffic": "显示交通",
+    "soundAlerts": "声音警报",
+    "highContrast": "高对比度",
+    "busInfo": "公交车信息",
+    "busNumber": "公交车号码",
+    "route": "路线",
+    "speed": "当前速度和方向",
+    "driver": "司机",
+    "capacity": "乘客容量",
+    "nextStops": "下一站",
+    "loading": "正在加载公交车位置..."
+  },
+  "status": {
+    "active": "活跃",
+    "delayed": "延误",
+    "stopped": "停止",
+    "offline": "离线"
+  },
+  "time": {
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟"
+  },
+  "notification": {
+    "languageChanged": "语言已更改为",
+    "locationFound": "已找到您的位置",
+    "locationError": "无法获取您的位置。请启用位置服务。",
+    "busSelected": "已选择公交车",
+    "busUpdated": "公交车位置已更新",
+    "offline": "使用离线数据"
+  },
+  "footer": {
+    "department": "交通运输部",
+    "description": "致力于为所有公民提供安全、高效、可靠的公共交通服务。",
+    "quickLinks": "快速链接",
+    "routeMaps": "路线地图",
+    "schedules": "时刻表",
+    "serviceAlerts": "服务警报",
+    "support": "支持",
+    "helpCenter": "帮助中心",
+    "contactUs": "联系我们",
+    "feedback": "反馈",
+    "accessibility": "无障碍访问",
+    "contact": "联系信息",
+    "rights": "保留所有权利。",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
+  }
+}

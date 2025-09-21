@@ -1,0 +1,333 @@
+{
+  "nav": {
+    "home": "Home",
+    "liveTracking": "Live Tracking",
+    "routes": "Routes",
+    "services": "Services",
+    "contact": "Contact",
+    "fullscreen": "Fullscreen",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Real-Time Public Transit Tracking",
+    "subtitle": "Monitor bus locations, schedules, and routes with our advanced tracking system. Ensuring efficient and reliable public transportation for all citizens.",
+    "trackBus": "Track Bus Now",
+    "viewRoutes": "View Routes"
+  },
+  "features": {
+    "title": "System Features",
+    "gps": {
+      "title": "GPS Tracking",
+      "desc": "Real-time GPS monitoring of all buses with accurate location updates every 30 seconds for precise tracking."
+    },
+    "schedule": {
+      "title": "Schedule Management",
+      "desc": "Automated schedule tracking with real-time updates on delays, early arrivals, and route modifications."
+    },
+    "mobile": {
+      "title": "Mobile Access",
+      "desc": "Responsive web design accessible on all devices, ensuring citizens can access transit information anywhere."
+    },
+    "analytics": {
+      "title": "Analytics Dashboard",
+      "desc": "Comprehensive reporting and analytics for route optimization and performance monitoring."
+    },
+    "alerts": {
+      "title": "Alert System",
+      "desc": "Automated notifications for service disruptions, delays, and important transit announcements."
+    },
+    "security": {
+      "title": "Secure Platform",
+      "desc": "Government-grade security ensuring data protection and system reliability for public use."
+    }
+  },
+  "stats": {
+    "buses": "Active Buses",
+    "routes": "Routes Covered",
+    "passengers": "Daily Passengers",
+    "uptime": "System Uptime"
+  },
+  "quickAccess": {
+    "title": "Quick Access",
+    "nearestStop": {
+      "title": "Find Nearest Stop",
+      "desc": "Locate the closest bus stop to your current location with walking directions."
+    },
+    "schedule": {
+      "title": "Schedule Lookup",
+      "desc": "Check bus schedules and plan your journey with arrival and departure times."
+    },
+    "alerts": {
+      "title": "Service Alerts",
+      "desc": "Stay informed about service disruptions, delays, and route changes."
+    },
+    "support": {
+      "title": "Support Center",
+      "desc": "Contact our 24/7 support team for assistance and inquiries."
+    }
+  },
+  "tracking": {
+    "title": "Bus Tracking Control",
+    "mapView": "Map View",
+    "listView": "List View",
+    "searchPlaceholder": "Search by route, bus number, or destination...",
+    "filterAll": "All",
+    "filterRoute": "Route",
+    "filterNearby": "Nearby",
+    "filterExpress": "Express",
+    "filterLocal": "Local",
+    "filterDelayed": "Delayed",
+    "autoRefresh": "Auto Refresh",
+    "refreshRate": "Refresh Rate",
+    "showTraffic": "Show Traffic",
+    "soundAlerts": "Sound Alerts",
+    "highContrast": "High Contrast",
+    "busInfo": "Bus Information",
+    "busNumber": "Bus Number",
+    "route": "Route",
+    "speed": "Current Speed & Direction",
+    "driver": "Driver",
+    "capacity": "Passenger Capacity",
+    "nextStops": "Next Stops",
+    "loading": "Loading bus locations..."
+  },
+  "status": {
+    "active": "Active",
+    "delayed": "Delayed",
+    "stopped": "Stopped",
+    "offline": "Offline"
+  },
+  "time": {
+    "seconds": "seconds",
+    "minute": "minute",
+    "minutes": "minutes"
+  },
+  "notification": {
+    "languageChanged": "Language changed to",
+    "locationFound": "Your location has been found",
+    "locationError": "Unable to get your location. Please enable location services.",
+    "busSelected": "Selected bus",
+    "busUpdated": "Bus locations updated",
+    "offline": "Using offline data"
+  },
+  "routes": {
+    "title": "Routes & Schedules",
+    "subtitle": "Explore our comprehensive network of bus routes and detailed schedules",
+    "searchPlaceholder": "Search routes by number, name, or destination...",
+    "allRoutes": "All Routes",
+    "express": "Express",
+    "local": "Local",
+    "night": "Night Service",
+    "airport": "Airport",
+    "allZones": "All Zones",
+    "northZone": "North Zone",
+    "southZone": "South Zone",
+    "eastZone": "East Zone",
+    "westZone": "West Zone",
+    "central": "Central",
+    "applyFilters": "Apply Filters",
+    "plannerTitle": "Route Planning Tool",
+    "from": "From",
+    "to": "To",
+    "fromPlaceholder": "Enter starting point...",
+    "toPlaceholder": "Enter destination...",
+    "planRoute": "Plan Route",
+    "frequency": "Frequency",
+    "stops": "stops",
+    "journey": "journey",
+    "every": "Every",
+    "mins": "mins",
+    "min": "min",
+    "routeCards": {
+      "101": {
+        "name": "Downtown - Airport Express",
+        "frequency": "Every 15 mins",
+        "stops": "25 stops",
+        "duration": "45 min journey",
+        "price": "₹50"
+      },
+      "202": {
+        "name": "City Center Circular",
+        "frequency": "Every 20 mins",
+        "stops": "32 stops",
+        "duration": "60 min journey",
+        "price": "₹30"
+      },
+      "303": {
+        "name": "North-South Night Service",
+        "frequency": "Every 45 mins",
+        "stops": "18 stops",
+        "duration": "55 min journey",
+        "price": "₹40"
+      },
+      "404": {
+        "name": "Tech Park Express",
+        "frequency": "Every 10 mins",
+        "stops": "15 stops",
+        "duration": "35 min journey",
+        "price": "₹45"
+      },
+      "505": {
+        "name": "University Circuit",
+        "frequency": "Every 25 mins",
+        "stops": "22 stops",
+        "duration": "50 min journey",
+        "price": "₹35"
+      }
+    }
+  },
+  "services": {
+    "title": "Service Alerts & Notifications",
+    "subtitle": "Stay informed with real-time updates, service disruptions, and important transit announcements",
+    "currentAlerts": "Current Active Alerts",
+    "allAlerts": "All Alerts",
+    "critical": "Critical",
+    "warning": "Warnings",
+    "info": "Information",
+    "resolved": "Resolved",
+    "emergency": "Emergency",
+    "weatherDelay": "Weather Delay",
+    "routeDiversion": "Route Diversion",
+    "hoursAgo": "hours ago",
+    "minutesAgo": "minutes ago",
+    "viewAlternativeRoutes": "View Alternative Routes",
+    "getUpdates": "Get Updates",
+    "weatherUpdates": "Weather Updates",
+    "share": "Share",
+    "viewDiversion": "View Diversion",
+    "downloadMap": "Download Map",
+    "viewHistory": "View History",
+    "subscribeTitle": "Subscribe to Alert Notifications",
+    "subscribeSubtitle": "Choose how you want to receive service updates and alerts",
+    "smsAlerts": "SMS Alerts",
+    "smsDescription": "Receive instant text messages for critical alerts",
+    "emailUpdates": "Email Updates",
+    "emailDescription": "Get detailed updates directly in your inbox",
+    "pushNotifications": "Push Notifications",
+    "pushDescription": "Real-time alerts on your mobile device",
+    "contactInfo": "Contact Information",
+    "contactPlaceholder": "Enter phone number or email",
+    "selectCategories": "Select Alert Categories",
+    "serviceDisruptions": "Service Disruptions",
+    "routeDiversions": "Route Diversions",
+    "weatherDelays": "Weather-Related Delays",
+    "emergencySituations": "Emergency Situations",
+    "plannedMaintenance": "Planned Maintenance",
+    "specificRoutes": "Specific Routes (Optional)",
+    "routesPlaceholder": "e.g., 15, 22, 45",
+    "subscribeButton": "Subscribe to Alerts",
+    "maintenanceTitle": "Planned Maintenance Schedule",
+    "followUs": "Follow Us for Real-Time Updates",
+    "socialSubtitle": "Get instant alerts and updates through our social media channels",
+    "archiveTitle": "Historical Alerts Archive",
+    "searchPlaceholder": "Search past alerts...",
+    "searchButton": "Search",
+    "alerts": {
+      "bridgeIncident": {
+        "title": "Route 15 Service Suspended - Bridge Incident",
+        "description": "Due to an emergency situation on the Central Bridge, Route 15 service is temporarily suspended. Passengers are advised to use alternative routes 15A and 16."
+      },
+      "weatherDelay": {
+        "title": "Heavy Rain Causing Delays on Multiple Routes",
+        "description": "Due to heavy rainfall and poor visibility, buses on Routes 22, 23, and 45 are experiencing delays of 15-20 minutes. Please plan your journey accordingly."
+      },
+      "routeDiversion": {
+        "title": "Route 8 Temporary Diversion - Construction Work",
+        "description": "Route 8 will be diverted via Park Avenue from 6 AM to 8 PM today due to road construction. Additional stops have been added along the diversion route."
+      },
+      "serviceRestored": {
+        "title": "Route 12 Service Restored",
+        "description": "The earlier technical issue affecting Route 12 has been resolved. Normal service has resumed on all stops."
+      }
+    },
+    "maintenance": {
+      "terminalUpgrade": {
+        "date": "January 28, 2025",
+        "title": "Downtown Terminal Upgrade",
+        "details": "Platform 3 and 4 will be closed for modernization work from 10 PM to 5 AM. Routes 10, 11, and 12 will temporarily use Platform 1 and 2."
+      },
+      "busStopImprovements": {
+        "date": "February 2, 2025",
+        "title": "Route 25 Bus Stop Improvements",
+        "details": "Installation of new digital displays and shelters at 5 major stops along Route 25. Temporary bus stop relocations will be marked."
+      },
+      "fleetMaintenance": {
+        "date": "February 10-12, 2025",
+        "title": "Fleet Maintenance Weekend",
+        "details": "Reduced frequency on Routes 30-35 during scheduled fleet maintenance. Buses will run every 30 minutes instead of 15 minutes."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact & Support Center",
+    "subtitle": "We're here to help 24/7. Get assistance, report issues, or provide feedback through multiple channels.",
+    "sendMessage": "Send Us a Message",
+    "customerService": "Customer Service",
+    "fullName": "Full Name *",
+    "emailAddress": "Email Address *",
+    "phoneNumber": "Phone Number",
+    "category": "Category *",
+    "selectCategory": "Select a category",
+    "message": "Message *",
+    "submitMessage": "Submit Message",
+    "responseTime": "Response Time Commitment: Within 24 hours for general inquiries, 2 hours for urgent matters",
+    "serviceHours": "Service Hours",
+    "monday_friday": "Monday - Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "holidays": "Holidays",
+    "hours_6_10": "6:00 AM - 10:00 PM",
+    "hours_7_8": "7:00 AM - 8:00 PM",
+    "hours_8_6": "8:00 AM - 6:00 PM",
+    "hours_9_5": "9:00 AM - 5:00 PM",
+    "categories": {
+      "general": "General Inquiry",
+      "complaint": "Complaint",
+      "feedback": "Feedback",
+      "lostFound": "Lost & Found",
+      "schedule": "Schedule Information",
+      "technical": "Technical Support",
+      "accessibility": "Accessibility",
+      "safety": "Safety Concern"
+    },
+    "contactMethods": {
+      "customerService": {
+        "title": "Customer Service",
+        "phone": "1-800-555-0123",
+        "waitTime": "Average wait time: 2 minutes"
+      },
+      "emailSupport": {
+        "title": "Email Support",
+        "email": "support@transit.gov",
+        "responseTime": "Response within 24 hours"
+      },
+      "ttyService": {
+        "title": "TTY/TDD Service",
+        "phone": "1-800-555-0124",
+        "description": "For hearing impaired"
+      },
+      "multiLanguage": {
+        "title": "Multi-Language Support",
+        "description": "Available in 15+ languages",
+        "instruction": "Press 2 for language options"
+      }
+    }
+  },
+  "footer": {
+    "department": "Department of Transportation",
+    "description": "Committed to providing safe, efficient, and reliable public transportation services for all citizens.",
+    "quickLinks": "Quick Links",
+    "routeMaps": "Route Maps",
+    "schedules": "Schedules",
+    "serviceAlerts": "Service Alerts",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "contactUs": "Contact Us",
+    "feedback": "Feedback",
+    "accessibility": "Accessibility",
+    "contact": "Contact Information",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Driver App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #28a745, #20c997);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content { padding: 30px; }
+        .section { 
+            background: #f8f9fa; 
+            margin: 20px 0; 
+            padding: 25px; 
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold;
+            color: #333;
+        }
+        input, select, button { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+        }
+        button { 
+            background: #28a745; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        button:hover { 
+            background: #218838; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .status.online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status.offline { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .status.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .emergency-btn {
+            background: #dc3545 !important;
+            animation: pulse 2s infinite;
+        }
+        .emergency-btn:hover {
+            background: #c82333 !important;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        .log {
+            height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .log-entry.success { background: #d4edda; color: #155724; }
+        .log-entry.error { background: #f8d7da; color: #721c24; }
+        .log-entry.info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚗 Bus Driver Dashboard</h1>
+            <p>Real-time bus location and passenger management</p>
+        </div>
+
+        <div class="content">
+            <!-- Login Section -->
+            <div id="loginSection" class="section">
+                <h2>Driver Login</h2>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label>Driver ID:</label>
+                            <input type="text" id="driverId" placeholder="Enter your driver ID" value="DRIVER_001">
+                        </div>
+                        <div class="form-group">
+                            <label>Password:</label>
+                            <input type="password" id="password" placeholder="Enter password" value="password123">
+                        </div>
+                        <button onclick="loginDriver()">Login</button>
+                    </div>
+                    <div>
+                        <h4>Quick Registration</h4>
+                        <button onclick="showRegisterForm()" style="background: #007bff;">Register New Driver</button>
+                        <div class="status offline" id="connectionStatus">Disconnected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section (hidden initially) -->
+            <div id="dashboardSection" style="display: none;">
+                <div class="section">
+                    <h2>Driver Status</h2>
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="shiftStatus">OFF</div>
+                            <div>Shift Status</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="passengerCount">0</div>
+                            <div>Passengers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="routeName">-</div>
+                            <div>Route</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="busId">-</div>
+                            <div>Bus ID</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <!-- Shift Management -->
+                    <div class="section">
+                        <h3>Shift Management</h3>
+                        <div class="form-group">
+                            <label>Bus ID:</label>
+                            <input type="text" id="assignBusId" placeholder="BUS_001">
+                        </div>
+                        <div class="form-group">
+                            <label>Route ID:</label>
+                            <input type="text" id="assignRouteId" placeholder="Enter route ID">
+                        </div>
+                        <button onclick="startShift()" id="startShiftBtn">Start Shift</button>
+                        <button onclick="endShift()" id="endShiftBtn" style="background: #dc3545;">End Shift</button>
+                    </div>
+
+                    <!-- Location Update -->
+                    <div class="section">
+                        <h3>Location Update</h3>
+                        <div class="form-group">
+                            <label>Latitude:</label>
+                            <input type="number" id="latitude" placeholder="19.0760" step="0.000001">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude:</label>
+                            <input type="number" id="longitude" placeholder="72.8777" step="0.000001">
+                        </div>
+                        <div class="form-group">
+                            <label>Speed (km/h):</label>
+                            <input type="number" id="speed" placeholder="45" min="0" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>Passenger Count:</label>
+                            <input type="number" id="passengers" placeholder="15" min="0" max="80">
+                        </div>
+                        <button onclick="updateLocation()">Update Location</button>
+                        <button onclick="getCurrentLocation()" style="background: #17a2b8;">Get GPS Location</button>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <!-- Emergency -->
+                    <div class="section">
+                        <h3>Emergency Controls</h3>
+                        <div class="form-group">
+                            <label>Alert Type:</label>
+                            <select id="alertType">
+                                <option value="breakdown">Vehicle Breakdown</option>
+                                <option value="accident">Accident</option>
+                                <option value="medical">Medical Emergency</option>
+                                <option value="security">Security Issue</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Message (optional):</label>
+                            <input type="text" id="alertMessage" placeholder="Describe the emergency...">
+                        </div>
+                        <button onclick="sendEmergencyAlert()" class="emergency-btn">🚨 SEND EMERGENCY ALERT</button>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="section">
+                        <h3>Activity Log</h3>
+                        <div class="log" id="activityLog">
+                            <div class="log-entry info">System ready for driver actions...</div>
+                        </div>
+                        <button onclick="clearLog()" style="background: #6c757d; font-size: 12px;">Clear Log</button>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <button onclick="logout()" style="background: #6c757d;">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket;
+        let authToken = null;
+        let driverData = null;
+
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('activityLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function loginDriver() {
+            const driverId = document.getElementById('driverId').value;
+            const password = document.getElementById('password').value;
+
+            if (!driverId || !password) {
+                addLog('Please enter driver ID and password', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/driver/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ driverId, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.token;
+                    driverData = data.data.driver;
+                    
+                    // Initialize Socket.io with auth token
+                    socket = io({ 
+                        auth: { token: authToken }
+                    });
+                    
+                    setupSocketListeners();
+                    
+                    // Show dashboard, hide login
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboardSection').style.display = 'block';
+                    
+                    updateDriverStats();
+                    addLog('Driver logged in successfully', 'success');
+                } else {
+                    addLog(`Login failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`Login error: ${error.message}`, 'error');
+            }
+        }
+
+        function setupSocketListeners() {
+            socket.on('connect', () => {
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectionStatus').className = 'status online';
+                addLog('Connected to real-time system', 'success');
+            });
+
+            socket.on('disconnect', () => {
+                document.getElementById('connectionStatus').textContent = 'Disconnected';
+                document.getElementById('connectionStatus').className = 'status offline';
+                addLog('Disconnected from real-time system', 'error');
+            });
+
+            socket.on('adminAnnouncement', (announcement) => {
+                addLog(`📢 Admin: ${announcement.message}`, 'info');
+                alert(`Admin Announcement: ${announcement.message}`);
+            });
+        }
+
+        async function startShift() {
+            const busId = document.getElementById('assignBusId').value;
+            const routeId = document.getElementById('assignRouteId').value;
+
+            if (!busId || !routeId) {
+                addLog('Please enter bus ID and route ID', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/driver/shift/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ busId, routeId })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('shiftStatus').textContent = 'ON';
+                    document.getElementById('busId').textContent = busId;
+                    addLog('Shift started successfully', 'success');
+                } else {
+                    addLog(`Shift start failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`Error starting shift: ${error.message}`, 'error');
+            }
+        }
+
+        async function endShift() {
+            try {
+                const response = await fetch('/api/driver/shift/end', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('shiftStatus').textContent = 'OFF';
+                    document.getElementById('busId').textContent = '-';
+                    addLog('Shift ended successfully', 'success');
+                } else {
+                    addLog(`Shift end failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`Error ending shift: ${error.message}`, 'error');
+            }
+        }
+
+        async function updateLocation() {
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lng = parseFloat(document.getElementById('longitude').value);
+            const speed = parseInt(document.getElementById('speed').value) || 0;
+            const passengers = parseInt(document.getElementById('passengers').value) || 0;
+
+            if (!lat || !lng) {
+                addLog('Please enter valid latitude and longitude', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/driver/location/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        lat, lng, speed, 
+                        passengerCount: passengers,
+                        heading: Math.random() * 360 // Random heading for demo
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('passengerCount').textContent = passengers;
+                    addLog(`Location updated: ${lat}, ${lng} (${speed} km/h)`, 'success');
+                } else {
+                    addLog(`Location update failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`Error updating location: ${error.message}`, 'error');
+            }
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    addLog('GPS location obtained', 'success');
+                }, (error) => {
+                    addLog(`GPS error: ${error.message}`, 'error');
+                });
+            } else {
+                addLog('Geolocation not supported', 'error');
+            }
+        }
+
+        async function sendEmergencyAlert() {
+            const alertType = document.getElementById('alertType').value;
+            const message = document.getElementById('alertMessage').value;
+
+            try {
+                const response = await fetch('/api/driver/emergency', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ alertType, message })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    addLog('🚨 EMERGENCY ALERT SENT', 'error');
+                    alert('Emergency alert sent to admin!');
+                } else {
+                    addLog(`Emergency alert failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog(`Error sending alert: ${error.message}`, 'error');
+            }
+        }
+
+        function updateDriverStats() {
+            if (driverData) {
+                document.getElementById('busId').textContent = driverData.currentBus?.busId || '-';
+                // Add more stats as needed
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('activityLog').innerHTML = '';
+        }
+
+        function logout() {
+            if (socket) {
+                socket.disconnect();
+            }
+            authToken = null;
+            driverData = null;
+            
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboardSection').style.display = 'none';
+            
+            addLog('Logged out', 'info');
+        }
+
+        // Auto-fill demo data
+        window.onload = () => {
+            document.getElementById('latitude').value = '19.0760';
+            document.getElementById('longitude').value = '72.8777';
+            document.getElementById('speed').value = '35';
+            document.getElementById('passengers').value = '12';
+            document.getElementById('assignBusId').value = 'BUS_001';
+            document.getElementById('assignRouteId').value = '507f1f77bcf86cd799439011'; // Sample ObjectId
+        };
+    </script>
+</body>
+</html>

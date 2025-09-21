@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Transit Tracking System | Department of Transportation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 80px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            order: 3;
+            margin-left: auto;
+        }
+
+        .language-selector {
+            margin-left: 20px;
+        }
+
+        .language-selector select {
+            padding: 8px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            background: white;
+            color: #374151;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-selector select:hover {
+            border-color: #4f46e5;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            order: 1;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: #4f46e5;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            order: 2;
+            margin: 0 auto;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #4f46e5;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            padding-top: 100px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+            transform: translateY(-100%);
+            z-index: 999;
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+            display: block;
+        }
+
+        .mobile-menu-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .mobile-menu-links a {
+            font-size: 1.3rem;
+            padding: 15px;
+        }
+
+        .mobile-menu-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .mobile-menu-links li {
+            margin-bottom: 15px;
+        }
+
+        .mobile-menu-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            font-size: 1.1rem;
+            display: block;
+            padding: 10px 0;
+            transition: color 0.3s;
+        }
+
+        .mobile-menu-links a:hover, .mobile-menu-links a.active {
+            color: #4f46e5;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #4f46e5;
+        }
+
+        .hero {
+            padding: 100px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #f59e0b, #f97316);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .features {
+            background: white;
+            padding: 100px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #1f2937;
+            margin-bottom: 60px;
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 40px 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #4f46e5;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .feature-description {
+            color: #6b7280;
+            line-height: 1.7;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+            padding: 80px 20px;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #f59e0b;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .quick-access {
+            background: #f8fafc;
+            padding: 80px 20px;
+        }
+
+        .access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .access-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .access-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .access-icon {
+            font-size: 2.5rem;
+            color: #4f46e5;
+            margin-bottom: 15px;
+        }
+
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 60px 20px 30px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: #f59e0b;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: #f59e0b;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            margin-top: 40px;
+            padding-top: 20px;
+            text-align: center;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 1024px) {
+            .features-grid {
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+                order: 3;
+            }
+
+            .nav-right {
+                order: 2;
+            }
+
+            .language-selector {
+                margin-left: 0;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .features-grid {
+                gap: 30px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-icon {
+                font-size: 2.5rem;
+            }
+
+            .feature-title {
+                font-size: 1.3rem;
+            }
+
+            .feature-description {
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav-container">
+            <div class="logo">
+                <i class="fas fa-bus"></i>
+                <div class="logo-text">Transit Track</div>
+            </div>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+                <li><a href="live tracking.html" data-i18n="nav.liveTracking">Live Tracking</a></li>
+                <li><a href="routes.html" data-i18n="nav.routes">Routes</a></li>
+                <li><a href="services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="contact page.html" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+            <div class="nav-right">
+                <div class="language-selector">
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="zh">中文</option>
+                        <option value="ar">العربية</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+        <div class="mobile-menu">
+            <ul class="mobile-menu-links">
+                <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+                <li><a href="live tracking.html" data-i18n="nav.liveTracking">Live Tracking</a></li>
+                <li><a href="routes.html" data-i18n="nav.routes">Routes</a></li>
+                <li><a href="services.html" data-i18n="nav.services">Services</a></li>
+                <li><a href="contact page.html" data-i18n="nav.contact">Contact</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <script>
+        // Mobile menu functionality
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.querySelector('.mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            const icon = mobileMenuBtn.querySelector('i');
+            if (mobileMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    </script>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 data-i18n="hero.title">Real-Time Public Transit Tracking</h1>
+            <p data-i18n="hero.subtitle">Monitor bus locations, schedules, and routes with our advanced tracking system. Ensuring efficient and reliable public transportation for all citizens.</p>
+            <div class="cta-buttons">
+                <a href="live tracking.html" class="btn btn-primary">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span data-i18n="hero.trackBus">Track Bus Now</span>
+                </a>
+                <a href="#routes" class="btn btn-secondary">
+                    <i class="fas fa-route"></i>
+                    <span data-i18n="hero.viewRoutes">View Routes</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="services">
+        <div class="container">
+            <h2 class="section-title" data-i18n="features.title">System Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-satellite feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.gps.title">GPS Tracking</h3>
+                    <p class="feature-description" data-i18n="features.gps.desc">Real-time GPS monitoring of all buses with accurate location updates every 30 seconds for precise tracking.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-clock feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.schedule.title">Schedule Management</h3>
+                    <p class="feature-description" data-i18n="features.schedule.desc">Automated schedule tracking with real-time updates on delays, early arrivals, and route modifications.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.mobile.title">Mobile Access</h3>
+                    <p class="feature-description" data-i18n="features.mobile.desc">Responsive web design accessible on all devices, ensuring citizens can access transit information anywhere.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.analytics.title">Analytics Dashboard</h3>
+                    <p class="feature-description" data-i18n="features.analytics.desc">Comprehensive reporting and analytics for route optimization and performance monitoring.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-bell feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.alerts.title">Alert System</h3>
+                    <p class="feature-description" data-i18n="features.alerts.desc">Automated notifications for service disruptions, delays, and important transit announcements.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h3 class="feature-title" data-i18n="features.security.title">Secure Platform</h3>
+                    <p class="feature-description" data-i18n="features.security.desc">Government-grade security ensuring data protection and system reliability for public use.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">250+</span>
+                    <div class="stat-label" data-i18n="stats.buses">Active Buses</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">45</span>
+                    <div class="stat-label" data-i18n="stats.routes">Routes Covered</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50K+</span>
+                    <div class="stat-label" data-i18n="stats.passengers">Daily Passengers</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">99.8%</span>
+                    <div class="stat-label" data-i18n="stats.uptime">System Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-access">
+        <div class="container">
+            <h2 class="section-title">Quick Access</h2>
+            <div class="access-grid">
+                <div class="access-card">
+                    <i class="fas fa-search-location access-icon"></i>
+                    <h3>Find Nearest Stop</h3>
+                    <p>Locate the closest bus stop to your current location with walking directions.</p>
+                </div>
+                <div class="access-card">
+                    <i class="fas fa-calendar-alt access-icon"></i>
+                    <h3>Schedule Lookup</h3>
+                    <p>Check bus schedules and plan your journey with arrival and departure times.</p>
+                </div>
+                <div class="access-card">
+                    <i class="fas fa-exclamation-triangle access-icon"></i>
+                    <h3>Service Alerts</h3>
+                    <p>Stay informed about service disruptions, delays, and route changes.</p>
+                </div>
+                <div class="access-card">
+                    <i class="fas fa-phone-alt access-icon"></i>
+                    <h3>Support Center</h3>
+                    <p>Contact our 24/7 support team for assistance and inquiries.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Department of Transportation</h3>
+                <p>Committed to providing safe, efficient, and reliable public transportation services for all citizens.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#tracking">Live Tracking</a></li>
+                    <li><a href="#routes">Route Maps</a></li>
+                    <li><a href="#schedules">Schedules</a></li>
+                    <li><a href="#alerts">Service Alerts</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#help">Help Center</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#feedback">Feedback</a></li>
+                    <li><a href="#accessibility">Accessibility</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Information</h3>
+                <ul>
+                    <li><i class="fas fa-phone"></i> 1-800-TRANSIT</li>
+                    <li><i class="fas fa-envelope"></i> info@transit.gov</li>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Government Plaza</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Department of Transportation. All rights reserved. | Privacy Policy | Terms of Service</p>
+        </div>
+    </footer>
+
+    <!-- Socket.io for real-time updates -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- API Integration -->
+    <script src="js/api-integration.js"></script>
+    <!-- Internationalization -->
+    <script src="js/i18n.js"></script>
+    
+    <script>
+        // Language change functionality is now handled by i18n.js
+        // This function is kept for backward compatibility
+        function changeLanguage(lang) {
+            if (window.i18n) {
+                window.i18n.changeLanguage(lang);
+            } else {
+                console.warn('i18n system not loaded yet');
+            }
+        }
+        
+        // Set up language selector event listener when i18n is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const languageSelect = document.getElementById('languageSelect');
+                if (languageSelect && !languageSelect.hasAttribute('data-i18n-setup')) {
+                    languageSelect.addEventListener('change', (e) => {
+                        changeLanguage(e.target.value);
+                    });
+                    languageSelect.setAttribute('data-i18n-setup', 'true');
+                }
+            }, 1000);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Animate stats on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach((stat, index) => {
+                        const finalNumber = stat.textContent;
+                        stat.textContent = '0';
+                        
+                        setTimeout(() => {
+                            animateNumber(stat, finalNumber);
+                        }, index * 200);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        observer.observe(document.querySelector('.stats'));
+
+        function animateNumber(element, target) {
+            const isPercentage = target.includes('%');
+            const isK = target.includes('K');
+            const numericTarget = parseInt(target.replace(/[^\d]/g, ''));
+            
+            let current = 0;
+            const increment = numericTarget / 50;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= numericTarget) {
+                    current = numericTarget;
+                    clearInterval(timer);
+                }
+                
+                let displayValue = Math.floor(current);
+                if (isK) displayValue = displayValue + 'K';
+                if (isPercentage) displayValue = displayValue + '%';
+                if (target.includes('+')) displayValue = displayValue + '+';
+                
+                element.textContent = displayValue;
+            }, 50);
+        }
+
+        // Add some interactive hover effects
+        document.querySelectorAll('.feature-card, .access-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+
+</html>

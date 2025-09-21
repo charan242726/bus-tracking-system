@@ -88,6 +88,12 @@ const userSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  // Authentication
+  password: {
+    type: String,
+    required: true,
+    select: false // Don't include in queries by default
   }
 }, {
   timestamps: true
