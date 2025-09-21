@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className="App">
-      <Router>
+      <Router basename={process.env.NODE_ENV === 'production' ? '/bus-tracking-system' : '/'}>
         <Header />
         <main>
           <Routes>
