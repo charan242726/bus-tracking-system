@@ -812,22 +812,24 @@ body {
     align-items: center;
   }
   
-  .mobile-menu-btn {
-    display: block;
-    order: 1;
-  }
-  
   .logo {
     display: flex;
     align-items: center;
-    order: 2;
-    flex: 1;
-    justify-content: center;
+    order: 1;
+    flex: 0 0 auto;
   }
   
   .mobile-language-nav {
     display: block;
+    order: 2;
+    flex: 1;
+    margin-left: 15px;
+  }
+  
+  .mobile-menu-btn {
+    display: block;
     order: 3;
+    flex: 0 0 auto;
   }
   
   .nav-links {
