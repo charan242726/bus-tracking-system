@@ -132,6 +132,7 @@ const LiveTrackingPage = () => {
         clearInterval(autoRefreshInterval);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Filter buses by type
@@ -174,6 +175,19 @@ const LiveTrackingPage = () => {
     setActiveFilter(filter);
     const filtered = filterBusesByType(buses, filter);
     setFilteredBuses(filtered);
+    
+    // Update marker visibility based on filter
+    if (map && busMarkers) {
+      Object.values(busMarkers).forEach(marker => {
+        map.removeLayer(marker);
+      });
+      
+      filtered.forEach(bus => {
+        if (busMarkers[bus.id]) {
+          busMarkers[bus.id].addTo(map);
+        }
+      });
+    }
   };
 
   // Get user location
@@ -293,13 +307,34 @@ const LiveTrackingPage = () => {
             <div className="setting-item">
               <span className="setting-label">{t('tracking.autoRefresh')}</span>
               <label className="toggle-switch">
-                <input type="checkbox" defaultChecked />
+                <input 
+                  type="checkbox" 
+                  defaultChecked 
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      const interval = setInterval(() => {
+                        // Auto refresh logic would go here
+                        console.log('Auto refreshing buses...');
+                      }, refreshRate);
+                      setAutoRefreshInterval(interval);
+                    } else {
+                      if (autoRefreshInterval) {
+                        clearInterval(autoRefreshInterval);
+                        setAutoRefreshInterval(null);
+                      }
+                    }
+                  }}
+                />
                 <span className="slider"></span>
               </label>
             </div>
             <div className="setting-item">
               <span className="setting-label">{t('tracking.refreshRate')}</span>
-              <select className="refresh-select" value={refreshRate / 1000}>
+              <select 
+                className="refresh-select" 
+                value={refreshRate / 1000}
+                onChange={(e) => setRefreshRate(e.target.value * 1000)}
+              >
                 <option value="10">10 {t('time.seconds')}</option>
                 <option value="30">30 {t('time.seconds')}</option>
                 <option value="60">1 {t('time.minute')}</option>
