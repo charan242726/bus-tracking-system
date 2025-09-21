@@ -1,12 +1,15 @@
 {
   "files": {
-    "main.css": "/bus-tracking-system/static/css/main.57611813.css",
-    "main.js": "/bus-tracking-system/static/js/main.791e33ca.js",
-    "static/js/527.8d8ccff9.chunk.js": "/bus-tracking-system/static/js/527.8d8ccff9.chunk.js",
-    "index.html": "/bus-tracking-system/index.html"
+    "main.css": "/bus-tracking-system/static/css/main.843b589e.css",
+    "main.js": "/bus-tracking-system/static/js/main.b75c1c39.js",
+    "static/js/228.d38b706c.chunk.js": "/bus-tracking-system/static/js/228.d38b706c.chunk.js",
+    "index.html": "/bus-tracking-system/index.html",
+    "main.843b589e.css.map": "/bus-tracking-system/static/css/main.843b589e.css.map",
+    "main.b75c1c39.js.map": "/bus-tracking-system/static/js/main.b75c1c39.js.map",
+    "228.d38b706c.chunk.js.map": "/bus-tracking-system/static/js/228.d38b706c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.57611813.css",
-    "static/js/main.791e33ca.js"
+    "static/css/main.843b589e.css",
+    "static/js/main.b75c1c39.js"
   ]
 }
