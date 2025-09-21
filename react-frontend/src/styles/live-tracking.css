@@ -544,20 +544,144 @@ input:checked + .slider:before {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        height: calc(100vh - 60px);
+    }
+    
     .control-panel {
         width: 100%;
-        position: absolute;
+        height: auto;
+        max-height: 50vh;
+        position: relative;
         z-index: 998;
+        margin-bottom: 10px; /* Add gap between orange container and input form */
+    }
+    
+    .control-panel.collapsed {
+        margin-left: 0;
+        height: 60px;
+        overflow: hidden;
+    }
+    
+    .map-container {
+        flex: 1;
+        height: 50vh;
+    }
+    
+    .panel-header {
+        padding: 15px 20px;
+    }
+    
+    .panel-title {
+        font-size: 1.1rem;
+    }
+    
+    .view-toggles {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+    
+    .view-toggle {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .search-section {
+        padding: 15px 20px;
+    }
+    
+    .search-input {
+        padding: 10px;
+        margin-bottom: 12px;
     }
 
     .bus-popup {
-        width: calc(100% - 40px);
-        right: 20px;
-        left: 20px;
+        width: calc(100% - 20px);
+        right: 10px;
+        left: 10px;
+        bottom: 10px;
     }
 
     .filter-buttons {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .filter-btn {
+        padding: 6px;
+        font-size: 0.8rem;
+    }
+    
+    .settings-section {
+        padding: 15px 20px;
+    }
+    
+    .bus-list {
+        padding: 15px 20px;
+        max-height: 250px;
+    }
+    
+    .bus-item {
+        padding: 12px;
+        margin-bottom: 10px;
+    }
+    
+    .toggle-panel {
+        top: 5px;
+        left: 5px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .location-btn, .history-btn {
+        width: 40px;
+        height: 40px;
+        right: 10px;
+    }
+    
+    .location-btn {
+        bottom: 80px;
+    }
+    
+    .history-btn {
+        bottom: 130px;
+    }
+    
+    .hidden-mobile {
+        display: none !important;
+    }
+    
+    /* List view in mobile takes full height */
+    .main-container.list-view {
+        .control-panel {
+            height: 100vh;
+            max-height: none;
+        }
+    }
+    
+    /* Improved mobile footer */
+    .footer {
+        padding: 30px 15px 15px;
+    }
+    
+    .footer-content {
+        gap: 15px;
+    }
+    
+    .footer-section {
+        margin-bottom: 15px;
+    }
+    
+    .footer-section h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .footer-section ul li {
+        margin-bottom: 6px;
+        font-size: 0.9rem;
     }
 }
 

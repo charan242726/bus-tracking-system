@@ -58,6 +58,19 @@ const Header = () => {
           <i className="fas fa-bus"></i>
           <div className="logo-text">Transit Track</div>
         </div>
+        
+        {/* Mobile Language Selector */}
+        <div className="mobile-language-nav">
+          <select value={i18n.language} onChange={handleLanguageChange}>
+            <option value="en">EN</option>
+            <option value="es">ES</option>
+            <option value="fr">FR</option>
+            <option value="zh">中</option>
+            <option value="ar">ع</option>
+            <option value="hi">हि</option>
+          </select>
+        </div>
+        
         <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
           <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
         </button>
@@ -123,6 +136,16 @@ const Header = () => {
         </div>
       </nav>
       <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
+        <div className="mobile-menu-header">
+          <div className="mobile-menu-logo">
+            <i className="fas fa-bus"></i>
+            <span>Transit Track</span>
+          </div>
+          <button className="mobile-menu-close" onClick={closeMobileMenu}>
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        
         <ul className="mobile-menu-links">
           <li>
             <Link 
@@ -170,6 +193,18 @@ const Header = () => {
             </Link>
           </li>
         </ul>
+        
+        <div className="mobile-menu-language">
+          <h4>Language</h4>
+          <div className="language-options">
+            <button className={i18n.language === 'en' ? 'active' : ''} onClick={() => {i18n.changeLanguage('en'); closeMobileMenu();}}>English</button>
+            <button className={i18n.language === 'es' ? 'active' : ''} onClick={() => {i18n.changeLanguage('es'); closeMobileMenu();}}>Español</button>
+            <button className={i18n.language === 'fr' ? 'active' : ''} onClick={() => {i18n.changeLanguage('fr'); closeMobileMenu();}}>Français</button>
+            <button className={i18n.language === 'zh' ? 'active' : ''} onClick={() => {i18n.changeLanguage('zh'); closeMobileMenu();}}>中文</button>
+            <button className={i18n.language === 'ar' ? 'active' : ''} onClick={() => {i18n.changeLanguage('ar'); closeMobileMenu();}}>العربية</button>
+            <button className={i18n.language === 'hi' ? 'active' : ''} onClick={() => {i18n.changeLanguage('hi'); closeMobileMenu();}}>हिन्दी</button>
+          </div>
+        </div>
       </div>
     </header>
   );

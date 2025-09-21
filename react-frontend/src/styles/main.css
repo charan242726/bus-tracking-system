@@ -451,6 +451,29 @@ body {
         grid-template-columns: repeat(2, 1fr);
         gap: 30px;
     }
+    
+    /* Mobile footer improvements */
+    .footer {
+        padding: 30px 15px 15px;
+    }
+    
+    .footer-content {
+        gap: 15px;
+    }
+    
+    .footer-section {
+        margin-bottom: 15px;
+    }
+    
+    .footer-section h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+    
+    .footer-section ul li {
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {

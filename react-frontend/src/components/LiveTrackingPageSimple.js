@@ -240,13 +240,23 @@ const LiveTrackingPage = () => {
             <div className="view-toggles">
               <button 
                 className={`view-toggle ${currentView === 'map' ? 'active' : ''}`}
-                onClick={() => setCurrentView('map')}
+                onClick={() => {
+                  setCurrentView('map');
+                  if (window.innerWidth <= 768) {
+                    setIsPanelCollapsed(true);
+                  }
+                }}
               >
                 <i className="fas fa-map"></i> <span>{t('tracking.mapView')}</span>
               </button>
               <button 
                 className={`view-toggle ${currentView === 'list' ? 'active' : ''}`}
-                onClick={() => setCurrentView('list')}
+                onClick={() => {
+                  setCurrentView('list');
+                  if (window.innerWidth <= 768) {
+                    setIsPanelCollapsed(false);
+                  }
+                }}
               >
                 <i className="fas fa-list"></i> <span>{t('tracking.listView')}</span>
               </button>
@@ -412,7 +422,7 @@ const LiveTrackingPage = () => {
         </div>
 
         {/* Map Container */}
-        <div className="map-container">
+        <div className={`map-container ${currentView === 'list' && window.innerWidth <= 768 ? 'hidden-mobile' : ''}`}>
           <button 
             className="toggle-panel" 
             onClick={() => setIsPanelCollapsed(!isPanelCollapsed)}
@@ -420,7 +430,11 @@ const LiveTrackingPage = () => {
             <i className="fas fa-bars"></i>
           </button>
           
-          <div ref={mapRef} id="map" style={{width: '100%', height: '100%'}}></div>
+          <div 
+            ref={mapRef} 
+            id="map" 
+            style={{width: '100%', height: '100%', display: currentView === 'list' && window.innerWidth <= 768 ? 'none' : 'block'}}
+          ></div>
           
           <button className="location-btn" onClick={getUserLocation}>
             <i className="fas fa-crosshairs"></i>
