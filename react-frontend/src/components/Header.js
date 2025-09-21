@@ -71,7 +71,7 @@ const Header = () => {
           </select>
         </div>
         
-        <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
+        <button className={`mobile-menu-btn ${isMobileMenuOpen ? 'active' : ''}`} onClick={toggleMobileMenu}>
           <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
         </button>
         <ul className="nav-links">
