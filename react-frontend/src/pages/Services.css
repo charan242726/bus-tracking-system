@@ -446,9 +446,14 @@
   flex-direction: column;
   align-items: center;
   gap: 15px;
+  background: none;
+  border: none;
   text-decoration: none;
   color: white;
+  cursor: pointer;
   transition: all 0.3s;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .social-link:hover {

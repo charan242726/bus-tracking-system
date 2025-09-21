@@ -327,30 +327,46 @@ const Services = () => {
           <h2 className="social-title">{t('services.followUs')}</h2>
           <p className="social-subtitle">{t('services.socialSubtitle')}</p>
           <div className="social-links">
-            <a href="#" className="social-link">
+            <button 
+              className="social-link" 
+              onClick={() => window.open('https://twitter.com/TransitTrack', '_blank', 'noopener,noreferrer')}
+              aria-label="Follow us on Twitter"
+            >
               <div className="social-icon twitter">
                 <i className="fab fa-twitter"></i>
               </div>
               <span>@TransitTrack</span>
-            </a>
-            <a href="#" className="social-link">
+            </button>
+            <button 
+              className="social-link" 
+              onClick={() => window.open('https://facebook.com/TransitTrack', '_blank', 'noopener,noreferrer')}
+              aria-label="Follow us on Facebook"
+            >
               <div className="social-icon facebook">
                 <i className="fab fa-facebook-f"></i>
               </div>
               <span>Transit Track</span>
-            </a>
-            <a href="#" className="social-link">
+            </button>
+            <button 
+              className="social-link" 
+              onClick={() => window.open('https://instagram.com/transit.track', '_blank', 'noopener,noreferrer')}
+              aria-label="Follow us on Instagram"
+            >
               <div className="social-icon instagram">
                 <i className="fab fa-instagram"></i>
               </div>
               <span>@transit.track</span>
-            </a>
-            <a href="#" className="social-link">
+            </button>
+            <button 
+              className="social-link" 
+              onClick={() => window.open('https://t.me/TransitUpdates', '_blank', 'noopener,noreferrer')}
+              aria-label="Join our Telegram channel"
+            >
               <div className="social-icon telegram">
                 <i className="fab fa-telegram-plane"></i>
               </div>
               <span>Transit Updates</span>
-            </a>
+            </button>
           </div>
         </div>
       </section>
