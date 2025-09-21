@@ -136,16 +136,6 @@ const Header = () => {
         </div>
       </nav>
       <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-        <div className="mobile-menu-header">
-          <div className="mobile-menu-logo">
-            <i className="fas fa-bus"></i>
-            <span>Transit Track</span>
-          </div>
-          <button className="mobile-menu-close" onClick={closeMobileMenu}>
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
-        
         <ul className="mobile-menu-links">
           <li>
             <Link 
@@ -153,7 +143,7 @@ const Header = () => {
               className={isActive('/') ? 'active' : ''}
               onClick={closeMobileMenu}
             >
-              {t('nav.home')}
+              <i className="fas fa-home"></i> {t('nav.home')}
             </Link>
           </li>
           <li>
@@ -162,7 +152,7 @@ const Header = () => {
               className={isActive('/live-tracking') ? 'active' : ''}
               onClick={closeMobileMenu}
             >
-              {t('nav.liveTracking')}
+              <i className="fas fa-map-marker-alt"></i> {t('nav.liveTracking')}
             </Link>
           </li>
           <li>
@@ -171,7 +161,7 @@ const Header = () => {
               className={isActive('/routes') ? 'active' : ''}
               onClick={closeMobileMenu}
             >
-              {t('nav.routes')}
+              <i className="fas fa-route"></i> {t('nav.routes')}
             </Link>
           </li>
           <li>
@@ -180,7 +170,7 @@ const Header = () => {
               className={isActive('/services') ? 'active' : ''}
               onClick={closeMobileMenu}
             >
-              {t('nav.services')}
+              <i className="fas fa-concierge-bell"></i> {t('nav.services')}
             </Link>
           </li>
           <li>
@@ -189,22 +179,10 @@ const Header = () => {
               className={isActive('/contact') ? 'active' : ''}
               onClick={closeMobileMenu}
             >
-              {t('nav.contact')}
+              <i className="fas fa-envelope"></i> {t('nav.contact')}
             </Link>
           </li>
         </ul>
-        
-        <div className="mobile-menu-language">
-          <h4>Language</h4>
-          <div className="language-options">
-            <button className={i18n.language === 'en' ? 'active' : ''} onClick={() => {i18n.changeLanguage('en'); closeMobileMenu();}}>English</button>
-            <button className={i18n.language === 'es' ? 'active' : ''} onClick={() => {i18n.changeLanguage('es'); closeMobileMenu();}}>Español</button>
-            <button className={i18n.language === 'fr' ? 'active' : ''} onClick={() => {i18n.changeLanguage('fr'); closeMobileMenu();}}>Français</button>
-            <button className={i18n.language === 'zh' ? 'active' : ''} onClick={() => {i18n.changeLanguage('zh'); closeMobileMenu();}}>中文</button>
-            <button className={i18n.language === 'ar' ? 'active' : ''} onClick={() => {i18n.changeLanguage('ar'); closeMobileMenu();}}>العربية</button>
-            <button className={i18n.language === 'hi' ? 'active' : ''} onClick={() => {i18n.changeLanguage('hi'); closeMobileMenu();}}>हिन्दी</button>
-          </div>
-        </div>
       </div>
     </header>
   );
