@@ -180,6 +180,10 @@ body {
   list-style: none;
   padding: 20px 0;
   margin: 0;
+  background: white;
+  border-radius: 15px;
+  margin: 20px 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu-links li {
@@ -196,11 +200,10 @@ body {
   gap: 12px;
   padding: 12px 16px;
   margin: 3px 15px;
-  background: white;
+  background: none;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: none;
   transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu-links a i {
@@ -213,16 +216,13 @@ body {
 .mobile-menu-links a:hover {
   color: #4f46e5;
   background: #f8fafc;
-  border-color: #4f46e5;
   transform: translateX(5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu-links a.active {
-  color: white;
-  background: #4f46e5;
-  border-color: #4f46e5;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  color: #4f46e5;
+  background: #eff6ff;
+  font-weight: 600;
 }
 
 .mobile-language-selector {
