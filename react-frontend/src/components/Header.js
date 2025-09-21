@@ -135,6 +135,10 @@ const Header = () => {
           </div>
         </div>
       </nav>
+      
+      {/* Blur overlay for mobile menu */}
+      <div className={`mobile-menu-overlay ${isMobileMenuOpen ? 'active' : ''}`} onClick={closeMobileMenu}></div>
+      
       <div className={`mobile-menu ${isMobileMenuOpen ? 'active' : ''}`}>
         <ul className="mobile-menu-links">
           <li>
